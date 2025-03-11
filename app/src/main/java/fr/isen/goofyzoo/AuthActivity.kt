@@ -8,15 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-/*import com.example.app.ui.screens.LoginScreen
-import com.example.app.ui.screens.RegisterScreen
 import com.google.firebase.auth.FirebaseAuth
-*//*
+import fr.isen.goofyzoo.screens.LoginScreen
+import fr.isen.goofyzoo.screens.RegisterScreen
+
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val auth = FirebaseAuth.getInstance()
+        auth.signOut()
+
         if (auth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -31,4 +33,3 @@ class AuthActivity : ComponentActivity() {
         }
     }
 }
-*/
