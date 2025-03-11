@@ -1,4 +1,4 @@
-package fr.isen.goofyzoo.screens
+package fr.isen.goofyzoo.screens.auth
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement

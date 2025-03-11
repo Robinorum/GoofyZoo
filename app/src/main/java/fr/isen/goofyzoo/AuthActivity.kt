@@ -9,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import fr.isen.goofyzoo.screens.LoginScreen
-import fr.isen.goofyzoo.screens.RegisterScreen
+import fr.isen.goofyzoo.screens.auth.LoginScreen
+import fr.isen.goofyzoo.screens.auth.RegisterScreen
 
 class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

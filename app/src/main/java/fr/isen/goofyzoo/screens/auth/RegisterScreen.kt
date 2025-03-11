@@ -1,4 +1,4 @@
-package fr.isen.goofyzoo.screens
+package fr.isen.goofyzoo.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +41,7 @@ fun RegisterScreen(navController: NavController) {
     }
 
     fun isValidPassword(password: String): Boolean {
-        val passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{7,}$"
+        val passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{7,}$"
         return password.matches(passwordPattern.toRegex())
     }
 
