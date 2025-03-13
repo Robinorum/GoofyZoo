@@ -20,6 +20,12 @@ fun BottomNavBar(navController: NavHostController) {
             onClick = { navController.navigate("home") }
         )
         NavigationBarItem(
+            icon = { Icon(painterResource(id = R.drawable.map), contentDescription = "Map") },
+            label = {Text("Map")},
+            selected = currentRoute == "map",
+            onClick = { navController.navigate("map")}
+        )
+        NavigationBarItem(
             icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Biomes") },
             label = { Text("Biomes") },
             selected = currentRoute == "biomes_list",
