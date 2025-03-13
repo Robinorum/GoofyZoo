@@ -58,6 +58,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.osmdroid.android)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -65,7 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation(libs.firebase.bom)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.database.ktx)
