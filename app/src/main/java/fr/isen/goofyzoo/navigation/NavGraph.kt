@@ -38,9 +38,6 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable("enclosure_detail") { backStackEntry ->
             EnclosureDetailScreen(navController)
         }
-        composable("animal_detail/{animalId}") { backStackEntry ->
-            AnimalDetailScreen(backStackEntry.arguments?.getString("animalId"))
-        }
 
         composable("admin_dashboard_screen") { AdminDashboardScreen(navController) }
         composable("maintenance_screen") { MaintenanceScreen() }
