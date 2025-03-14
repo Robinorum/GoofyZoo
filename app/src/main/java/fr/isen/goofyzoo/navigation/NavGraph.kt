@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import fr.isen.goofyzoo.models.Biome
 import fr.isen.goofyzoo.screens.admin.AdminDashboardScreen
 import fr.isen.goofyzoo.screens.admin.FeedingScheduleScreen
 import fr.isen.goofyzoo.screens.admin.MaintenanceScreen
@@ -30,12 +31,12 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable("navigation_screen") { NavigationScreen() }
 
         composable("biomes_list") { BiomeListScreen(navController) }
-        composable("biome_detail/{biomeId}") { backStackEntry ->
-            BiomeDetailScreen(navController, backStackEntry.arguments?.getString("biomeId"))
+        composable("biome_detail") { backStackEntry ->
+            BiomeDetailScreen(navController)
         }
         composable("enclosures") { EnclosuresScreen() }
-        composable("enclosure_detail/{enclosureId}") { backStackEntry ->
-            EnclosureDetailScreen(navController, backStackEntry.arguments?.getString("enclosureId"))
+        composable("enclosure_detail") { backStackEntry ->
+            EnclosureDetailScreen(navController)
         }
         composable("animal_detail/{animalId}") { backStackEntry ->
             AnimalDetailScreen(backStackEntry.arguments?.getString("animalId"))
