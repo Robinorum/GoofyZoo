@@ -1,21 +1,8 @@
 package fr.isen.goofyzoo.screens.auth
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +28,7 @@ fun RegisterScreen(navController: NavController) {
     }
 
     fun isValidPassword(password: String): Boolean {
-        val passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{7,}$"
+        val passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\|,.<>/?]).{7,}$"
         return password.matches(passwordPattern.toRegex())
     }
 
@@ -102,7 +89,13 @@ fun RegisterScreen(navController: NavController) {
                             val user = auth.currentUser
                             val userId = user?.uid ?: return@addOnCompleteListener
 
-                            val userData = User(id = userId, username = username, email = email)
+                            val userData = mapOf(
+                                "id" to userId,
+                                "username" to username,
+                                "email" to email,
+                                "admin" to false // Par défaut, l'utilisateur n'est pas admin
+                            )
+
                             database.child("users").child(userId).setValue(userData)
                                 .addOnCompleteListener { dbTask ->
                                     if (dbTask.isSuccessful) {

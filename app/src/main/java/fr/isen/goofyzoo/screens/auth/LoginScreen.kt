@@ -24,7 +24,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import fr.isen.goofyzoo.MainActivity
+import fr.isen.goofyzoo.AdminActivity
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -33,6 +35,7 @@ fun LoginScreen(navController: NavController) {
     var errorMessage by remember { mutableStateOf("") }
 
     val auth = FirebaseAuth.getInstance()
+    val database = FirebaseDatabase.getInstance().reference
 
     Column(
         modifier = Modifier
@@ -69,8 +72,22 @@ fun LoginScreen(navController: NavController) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val intent = Intent(navController.context, MainActivity::class.java)
-                            navController.context.startActivity(intent)
+                            val user = auth.currentUser
+                            val userId = user?.uid ?: return@addOnCompleteListener
+
+                            // Vérifier si l'utilisateur est admin
+                            database.child("users").child(userId).get()
+                                .addOnSuccessListener { snapshot ->
+                                    val isAdmin = snapshot.child("admin").getValue(Boolean::class.java) ?: false
+
+                                    val intent = if (isAdmin) {
+                                        Intent(navController.context, AdminActivity::class.java) // Redirige vers AdminPage
+                                    } else {
+                                        Intent(navController.context, MainActivity::class.java) // Redirige vers MainActivity
+                                    }
+
+                                    navController.context.startActivity(intent)
+                                }
                         } else {
                             errorMessage = task.exception?.localizedMessage ?: "Unknown error"
                         }
@@ -94,3 +111,4 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+
