@@ -4,9 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Animal(
+data class Service(
     val id: String = "",
     val name: String = "",
-    val id_enclos: String = "",
-    val id_animal: String = ""
+    val id_service: String = ""
 ) : Parcelable
