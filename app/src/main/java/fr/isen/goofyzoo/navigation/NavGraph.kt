@@ -5,10 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import fr.isen.goofyzoo.models.Biome
 import fr.isen.goofyzoo.screens.biomes.BiomeDetailScreen
 import fr.isen.goofyzoo.screens.biomes.BiomeListScreen
-import fr.isen.goofyzoo.screens.enclosures.AnimalDetailScreen
 import fr.isen.goofyzoo.screens.enclosures.EnclosureDetailScreen
 import fr.isen.goofyzoo.screens.enclosures.EnclosuresScreen
 import fr.isen.goofyzoo.screens.main.HomePage
