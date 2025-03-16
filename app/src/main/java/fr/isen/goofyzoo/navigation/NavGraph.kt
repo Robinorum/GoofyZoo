@@ -5,9 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import fr.isen.goofyzoo.screens.admin.AdminDashboardScreen
-import fr.isen.goofyzoo.screens.admin.FeedingScheduleScreen
-import fr.isen.goofyzoo.screens.admin.MaintenanceScreen
 import fr.isen.goofyzoo.screens.biomes.BiomeDetailScreen
 import fr.isen.goofyzoo.screens.biomes.BiomeListScreen
 import fr.isen.goofyzoo.screens.enclosures.AnimalDetailScreen
@@ -41,9 +38,6 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
             AnimalDetailScreen(backStackEntry.arguments?.getString("animalId"))
         }
 
-        composable("admin_dashboard_screen") { AdminDashboardScreen(navController) }
-        composable("maintenance_screen") { MaintenanceScreen() }
-        composable("feeding_schedule_screen") { FeedingScheduleScreen() }
 
     }
 }
