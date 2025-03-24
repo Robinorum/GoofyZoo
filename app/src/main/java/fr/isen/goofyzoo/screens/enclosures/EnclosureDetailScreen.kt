@@ -1,7 +1,12 @@
 package fr.isen.goofyzoo.screens.enclosures
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +39,6 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                         for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
                             val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
                             if (enclosureId == enc.id.toString()) {
-
                                 val fetchedReviews = enclosureSnapshot.child("reviews")
                                     .children
                                     .mapNotNull { it.getValue<Review>() }
@@ -53,6 +57,7 @@ fun EnclosureDetailScreen(navController: NavHostController) {
         modifier = Modifier
             .padding(16.dp)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState()) // Ajout du défilement vertical
     ) {
         enclosure?.let {
             Text(
@@ -84,6 +89,48 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
+           /* it.meals.foreach { meal ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F1F1))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = meal,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                        )
+                    }
+                }
+            }*/
+            Text(
+                text = "Animaux dans l'enclos: ${it.meal}",
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            it.animals.forEach { animal ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F1F1))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = animal.name,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Votre avis:",
@@ -98,7 +145,7 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                 for (i in 1..5) {
                     IconButton(onClick = { rating = i }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.star),
+                            imageVector = Icons.Filled.Star,
                             contentDescription = "$i étoiles",
                             tint = if (i <= rating) Color.Yellow else Color.Gray
                         )
@@ -125,8 +172,6 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                             rating = rating,
                             comment = reviewText
                         )
-                        //database.child("zoo").child(it.id_biomes.toString()).child(it.id).child("reviews").push().setValue(newReview)
-
 
                         database.child("zoo").get().addOnSuccessListener { snapshot ->
                             for (biomeSnapshot in snapshot.children) {
@@ -135,7 +180,6 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                                     for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
                                         val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
                                         if (enclosureId == it.id.toString()) {
-
                                             enclosureSnapshot.ref.child("reviews").push().setValue(newReview)
                                             return@addOnSuccessListener
                                         }
@@ -143,10 +187,6 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                                 }
                             }
                         }
-
-
-
-
 
                         reviews = reviews + newReview
                         rating = 0
@@ -184,7 +224,7 @@ fun EnclosureDetailScreen(navController: NavHostController) {
                         ) {
                             for (i in 1..5) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.star),
+                                    imageVector = Icons.Filled.Star,
                                     contentDescription = "$i étoiles",
                                     tint = if (i <= review.rating) Color.Yellow else Color.Gray
                                 )
