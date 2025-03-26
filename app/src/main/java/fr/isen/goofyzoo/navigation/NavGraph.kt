@@ -12,7 +12,6 @@ import fr.isen.goofyzoo.screens.enclosures.EnclosuresScreen
 import fr.isen.goofyzoo.screens.main.HomePage
 import fr.isen.goofyzoo.screens.main.MapPage
 import fr.isen.goofyzoo.screens.main.NavigationScreen
-import fr.isen.goofyzoo.screens.main.ReviewsScreen
 import fr.isen.goofyzoo.screens.main.ServicesScreen
 
 
@@ -22,7 +21,6 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable("home") { HomePage() }
         composable("map") { MapPage() }
         composable("services_screen") { ServicesScreen() }
-        composable("reviews_screen") { ReviewsScreen() }
         composable("navigation_screen") { NavigationScreen() }
 
         composable("biomes_list") { BiomeListScreen(navController) }
