@@ -17,7 +17,7 @@ import fr.isen.goofyzoo.screens.main.ServicesScreen
 
 
 @Composable
-fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier, userId: String, username: String) {
     NavHost(navController = navController, startDestination = "home", modifier = modifier) {
         composable("home") { HomePage() }
         composable("map") { MapPage() }
@@ -31,7 +31,7 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         }
         composable("enclosures") { EnclosuresScreen() }
         composable("enclosure_detail") { backStackEntry ->
-            EnclosureDetailScreen(navController)
+            EnclosureDetailScreen(navController, userId, username)
         }
 
 

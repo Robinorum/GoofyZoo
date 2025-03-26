@@ -17,6 +17,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val userId = intent.getStringExtra("UserId") ?: "unknown"
+        val username = intent.getStringExtra("Username") ?: "unknown"
         setContent {
             GoofyZooTheme {
                 val navController = rememberNavController()
@@ -24,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = { BottomNavBar(navController) }
                 ) { innerPadding ->
-                    NavigationGraph(navController, Modifier.padding(innerPadding))
+                    NavigationGraph(navController, Modifier.padding(innerPadding), userId, username)
                 }
             }
         }

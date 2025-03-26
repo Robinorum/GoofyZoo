@@ -17,7 +17,7 @@ class AuthActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val auth = FirebaseAuth.getInstance()
-       // auth.signOut()
+        auth.signOut()
 
         if (auth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))

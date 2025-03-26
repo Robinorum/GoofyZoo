@@ -79,6 +79,7 @@ fun LoginScreen(navController: NavController) {
                             database.child("users").child(userId).get()
                                 .addOnSuccessListener { snapshot ->
                                     val isAdmin = snapshot.child("admin").getValue(Boolean::class.java) ?: false
+                                    val username = snapshot.child("username").getValue(String::class.java) ?: ""
 
                                     val intent = if (isAdmin) {
                                         Intent(navController.context, AdminActivity::class.java) // Redirige vers AdminPage
@@ -86,7 +87,14 @@ fun LoginScreen(navController: NavController) {
                                         Intent(navController.context, MainActivity::class.java) // Redirige vers MainActivity
                                     }
 
-                                    navController.context.startActivity(intent)
+
+
+                                        intent.putExtra("UserId", userId)
+                                        intent.putExtra("Username", username)
+                                        navController.context.startActivity(intent)
+
+
+
                                 }
                         } else {
                             errorMessage = task.exception?.localizedMessage ?: "Unknown error"
