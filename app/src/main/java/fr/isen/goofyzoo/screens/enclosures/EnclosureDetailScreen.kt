@@ -165,6 +165,8 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                 comment = reviewText
                             )
 
+                            database.child("users").child(userId).child("reviews").push().setValue(newReview)
+
                             database.child("zoo").get().addOnSuccessListener { snapshot ->
                                 for (biomeSnapshot in snapshot.children) {
                                     val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
@@ -179,6 +181,8 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                     }
                                 }
                             }
+
+
 
                             reviews = reviews + newReview
                             rating = 0
