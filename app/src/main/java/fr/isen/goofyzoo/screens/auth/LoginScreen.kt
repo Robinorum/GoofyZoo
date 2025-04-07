@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import fr.isen.goofyzoo.MainActivity
 import fr.isen.goofyzoo.AdminActivity
+import fr.isen.goofyzoo.EmployeeActivity
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -79,12 +80,17 @@ fun LoginScreen(navController: NavController) {
                             database.child("users").child(userId).get()
                                 .addOnSuccessListener { snapshot ->
                                     val isAdmin = snapshot.child("admin").getValue(Boolean::class.java) ?: false
+                                    val isEmployee = snapshot.child("employee").getValue(Boolean::class.java) ?: false
                                     val username = snapshot.child("username").getValue(String::class.java) ?: ""
 
                                     val intent = if (isAdmin) {
-                                        Intent(navController.context, AdminActivity::class.java) // Redirige vers AdminPage
-                                    } else {
-                                        Intent(navController.context, MainActivity::class.java) // Redirige vers MainActivity
+                                        Intent(navController.context, AdminActivity::class.java)
+                                    }
+                                    else if (isEmployee){
+                                        Intent(navController.context, EmployeeActivity::class.java)
+                                    }
+                                    else {
+                                        Intent(navController.context, MainActivity::class.java)
                                     }
 
 

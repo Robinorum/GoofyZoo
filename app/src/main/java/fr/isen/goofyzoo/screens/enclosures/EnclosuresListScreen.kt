@@ -84,7 +84,7 @@ fun EnclosuresListScreen(navController: NavHostController) {
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                     )
 
-                    if (biome.services.isEmpty()) {
+                    if (biome.enclosures.isEmpty()) {
                         Text(
                             text = "Aucun enclos",
                             style = MaterialTheme.typography.bodySmall,

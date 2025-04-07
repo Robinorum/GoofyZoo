@@ -17,7 +17,6 @@
         <activity
             android:name=".AuthActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.GoofyZoo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,13 +26,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.GoofyZoo">
         </activity>
         <activity
             android:name=".AdminActivity"
             android:exported="true"
-            android:label="@string/app_name"
+            android:theme="@style/Theme.GoofyZoo">
+        </activity>
+        <activity
+            android:name=".EmployeeActivity"
+            android:exported="true"
             android:theme="@style/Theme.GoofyZoo">
         </activity>
 

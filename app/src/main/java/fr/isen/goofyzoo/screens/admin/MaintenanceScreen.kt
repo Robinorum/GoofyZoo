@@ -67,7 +67,7 @@ fun MaintenanceScreen() {
                                 if (biomeId == biome.id) {
                                     for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
                                         val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
-                                        if (enclosureId == enclosure.id.toString()) {
+                                        if (enclosureId == enclosure.id) {
                                             enclosureSnapshot.ref.child("is_open").setValue(newState)
                                             return@addOnSuccessListener
                                         }
