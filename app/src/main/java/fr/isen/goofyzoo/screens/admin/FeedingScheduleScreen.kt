@@ -171,7 +171,7 @@ fun FeedingItem(enclosure: Enclosure, onTimePicked: (String) -> Unit, context: C
                         TimePickerDialog(
                             context,
                             { _, hourOfDay, minute ->
-                                val pickedTime = String.format("%02d:%02d", hourOfDay, minute)
+                                val pickedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
                                 timeText = pickedTime
                                 onTimePicked(pickedTime)
                             },

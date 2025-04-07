@@ -35,29 +35,33 @@ fun EmployeeDashboardScreen(navController: NavController) {
                 val upcomingList = mutableListOf<Triple<String, String, String>>()
 
                 snapshot.children.forEach { biomeSnap ->
-                    val biomeName = biomeSnap.child("name").getValue(String::class.java) ?: return@forEach
-                    val enclosuresSnap = biomeSnap.child("enclosures")
-                    enclosuresSnap.children.forEach { encSnap ->
-                        val id = encSnap.child("id").getValue(String::class.java)
-                        val meal = encSnap.child("meal").getValue(String::class.java)
-                        if (!id.isNullOrEmpty() && !meal.isNullOrEmpty()) {
-                            try {
-                                val mealDate = sdf.parse(meal) ?: return@forEach
-                                val mealCal = Calendar.getInstance().apply {
-                                    time = mealDate
-                                    set(Calendar.YEAR, now.get(Calendar.YEAR))
-                                    set(Calendar.MONTH, now.get(Calendar.MONTH))
-                                    set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
-                                }
-                                if (mealCal.after(now)) {
-                                    upcomingList.add(Triple(biomeName, id, meal))
-                                }
-                            } catch (_: Exception) {}
+                    val biomeName = biomeSnap.child("name").getValue(String::class.java)
+                    if (biomeName != null) {
+                        val enclosuresSnap = biomeSnap.child("enclosures")
+                        enclosuresSnap.children.forEach { encSnap ->
+                            val id = encSnap.child("id").getValue(String::class.java)
+                            val meal = encSnap.child("meal").getValue(String::class.java)
+                            if (!id.isNullOrEmpty() && !meal.isNullOrEmpty()) {
+                                try {
+                                    val mealDate = sdf.parse(meal)
+                                    if (mealDate != null) {
+                                        val mealCal = Calendar.getInstance().apply {
+                                            time = mealDate
+                                            set(Calendar.YEAR, now.get(Calendar.YEAR))
+                                            set(Calendar.MONTH, now.get(Calendar.MONTH))
+                                            set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
+                                        }
+                                        if (mealCal.after(now)) {
+                                            upcomingList.add(Triple(biomeName, id, meal))
+                                        }
+                                    }
+                                } catch (_: Exception) {}
+                            }
                         }
                     }
                 }
 
-                // Trie du plus proche au plus lointain
+
                 upcomingList.sortBy { (_, _, meal) ->
                     val cal = Calendar.getInstance().apply {
                         time = sdf.parse(meal)!!
@@ -118,6 +122,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
             } else {
                 items(enclosuresToFeed) { (biome, id, meal) ->
                     FeedingInfoCard(biomeName = biome, enclosureId = id, mealTime = meal)
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

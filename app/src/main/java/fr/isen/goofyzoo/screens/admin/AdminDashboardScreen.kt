@@ -23,14 +23,14 @@ fun AdminDashboardScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // Affichage du logo
+
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo du Zoo",
             modifier = Modifier.size(120.dp)
         )
 
-        // Titre
+
         Text(
             text = "Tableau de Bord Admin",
             fontSize = 22.sp,
@@ -38,7 +38,7 @@ fun AdminDashboardScreen(navController: NavController) {
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Boutons stylisés
+
         Button(
             onClick = { navController.navigate("maintenance_screen") },
             modifier = Modifier.fillMaxWidth(),

@@ -52,7 +52,6 @@ android {
     }
     composeCompiler {
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
-        stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
     }
 }
 
@@ -66,7 +65,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.osmdroid.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth.ktx)
@@ -78,6 +77,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    implementation(libs.datetime)
 
 }

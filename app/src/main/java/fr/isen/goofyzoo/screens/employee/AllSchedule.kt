@@ -43,7 +43,7 @@ fun AllSchedule() {
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            text = "Gestion des horaires de nourrissage",
+            text = "Horaires de nourrissage",
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
             modifier = Modifier
                 .padding(bottom = 16.dp)
