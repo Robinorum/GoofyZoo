@@ -20,6 +20,7 @@ import fr.isen.goofyzoo.models.Enclosure
 import fr.isen.goofyzoo.models.Review
 
 
+
 @Composable
 fun EnclosureDetailScreen(navController: NavHostController, userId: String, username: String) {
     val enclosure = navController.previousBackStackEntry?.savedStateHandle?.get<Enclosure>("enclosure")
@@ -27,6 +28,10 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
     var reviewText by remember { mutableStateOf("") }
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     val database = FirebaseDatabase.getInstance().reference
+
+    var isEditing by remember { mutableStateOf(false) }
+    var reviewBeingEdited by remember { mutableStateOf<Review?>(null) }
+
 
     // Vérifier si l'utilisateur a déjà posté un avis
     val hasUserReviewed by remember(reviews, userId) {
@@ -74,6 +79,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
 
+            // Affichage du statut de l'enclos
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,18 +95,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 )
             }
 
-            Text(
-                text = "Repas prévu: ${it.meal}",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            Text(
-                text = "Animaux dans l'enclos: ${it.meal}",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
+            // Affichage des animaux dans l'enclos
             it.animals.forEach { animal ->
                 Card(
                     modifier = Modifier
@@ -121,14 +116,15 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Afficher le champ d'avis uniquement si l'utilisateur n'a pas encore posté
-            if (!hasUserReviewed) {
-                Text(
-                    text = "Votre avis:",
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+            // Section "Votre avis"
+            Text(
+                text = "Votre avis:",
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
+            // Affichage du champ d'avis uniquement si l'utilisateur n'a pas encore posté
+            if (!hasUserReviewed) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -182,8 +178,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                 }
                             }
 
-
-
                             reviews = reviews + newReview
                             rating = 0
                             reviewText = ""
@@ -196,22 +190,100 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     Text("Envoyer")
                 }
             } else {
-                Text(
-                    text = "Vous avez déjà donné votre avis.",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                val userReview = reviews.firstOrNull { it.userId == userId }
+                if (userReview != null) {
+                    // Affichage de l'avis de l'utilisateur dans un encadré
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                for (i in 1..5) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = "$i étoiles",
+                                        tint = if (i <= userReview.rating) Color.Yellow else Color.Gray
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = userReview.comment,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Button(
+                                    onClick = {
+                                        // Logique pour supprimer l'avis
+                                        userReview?.let { review ->
+                                            // Récupérer la référence de la base de données
+                                            database.child("zoo").get().addOnSuccessListener { snapshot ->
+                                                for (biomeSnapshot in snapshot.children) {
+                                                    val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
+                                                    if (biomeId == enclosure?.id_biomes) {
+                                                        for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
+                                                            val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
+                                                            if (enclosureId == enclosure?.id) {
+                                                                // Trouver l'avis à supprimer dans l'enclos
+                                                                val reviewRef = enclosureSnapshot.child("reviews").children.firstOrNull {
+                                                                    it.getValue<Review>()?.id == review.id
+                                                                }?.ref
+                                                                // Supprimer l'avis de l'enclos
+                                                                reviewRef?.removeValue()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }.addOnFailureListener { error ->
+                                                println("Erreur lors de la suppression dans l'enclos: ${error.message}")
+                                            }
+
+                                            // Supprimer l'avis de la collection de l'utilisateur
+                                            database.child("users").child(userId).child("reviews").get().addOnSuccessListener { userSnapshot ->
+                                                userSnapshot.children.firstOrNull {
+                                                    it.getValue<Review>()?.id == review.id
+                                                }?.ref?.removeValue()?.addOnSuccessListener {
+                                                    // Mettre à jour la liste locale des avis
+                                                    reviews = reviews.filter { it.id != review.id }
+                                                }
+                                            }.addOnFailureListener { error ->
+                                                println("Erreur lors de la suppression dans la collection utilisateur: ${error.message}")
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier.width(100.dp)
+                                ) {
+                                    Text("Supprimer")
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Section "Avis des visiteurs"
             Text(
                 text = "Avis des visiteurs:",
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            reviews.forEach { review ->
+            // Affichage des avis des autres utilisateurs
+            reviews.filter { it.userId != userId }.forEach { review ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -248,6 +320,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     }
                 }
             }
+
         } ?: Text(
             text = "Chargement...",
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),

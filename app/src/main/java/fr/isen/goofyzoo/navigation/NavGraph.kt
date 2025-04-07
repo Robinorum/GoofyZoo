@@ -12,12 +12,13 @@ import fr.isen.goofyzoo.screens.main.MapPage
 import fr.isen.goofyzoo.screens.main.NavigationScreen
 import fr.isen.goofyzoo.screens.services.ServiceDetailScreen
 import fr.isen.goofyzoo.screens.services.ServicesListScreen
-
+import fr.isen.goofyzoo.screens.profil.ProfileScreen
 
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier, userId: String, username: String) {
     NavHost(navController = navController, startDestination = "home", modifier = modifier) {
-        composable("home") { HomePage() }
+        composable("home") { HomePage(navController) }
+        composable("profile_screen") { ProfileScreen(navController,userId,username) }
         composable("map") { MapPage() }
 
         composable("enclosures_screen") { EnclosuresListScreen(navController) }
