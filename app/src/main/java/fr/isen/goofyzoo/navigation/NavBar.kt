@@ -27,9 +27,9 @@ fun BottomNavBar(navController: NavHostController) {
         )
         NavigationBarItem(
             icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Biomes") },
-            label = { Text("Biomes") },
-            selected = currentRoute == "biomes_list",
-            onClick = { navController.navigate("biomes_list") }
+            label = { Text("Enclos") },
+            selected = currentRoute == "enclosures_screen",
+            onClick = { navController.navigate("enclosures_screen") }
         )
         NavigationBarItem(
             icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Services") },

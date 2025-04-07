@@ -5,14 +5,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import fr.isen.goofyzoo.screens.biomes.BiomeDetailScreen
-import fr.isen.goofyzoo.screens.biomes.BiomeListScreen
+import fr.isen.goofyzoo.screens.enclosures.EnclosuresListScreen
 import fr.isen.goofyzoo.screens.enclosures.EnclosureDetailScreen
-import fr.isen.goofyzoo.screens.enclosures.EnclosuresScreen
 import fr.isen.goofyzoo.screens.main.HomePage
 import fr.isen.goofyzoo.screens.main.MapPage
 import fr.isen.goofyzoo.screens.main.NavigationScreen
-import fr.isen.goofyzoo.screens.main.ServicesScreen
+import fr.isen.goofyzoo.screens.services.ServiceDetailScreen
+import fr.isen.goofyzoo.screens.services.ServicesListScreen
 
 
 @Composable
@@ -20,18 +19,18 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
     NavHost(navController = navController, startDestination = "home", modifier = modifier) {
         composable("home") { HomePage() }
         composable("map") { MapPage() }
-        composable("services_screen") { ServicesScreen() }
-        composable("navigation_screen") { NavigationScreen() }
 
-        composable("biomes_list") { BiomeListScreen(navController) }
-        composable("biome_detail") { backStackEntry ->
-            BiomeDetailScreen(navController)
-        }
-        composable("enclosures") { EnclosuresScreen() }
+        composable("enclosures_screen") { EnclosuresListScreen(navController) }
         composable("enclosure_detail") { backStackEntry ->
             EnclosureDetailScreen(navController, userId, username)
         }
 
+        composable("services_screen") { ServicesListScreen(navController) }
+        composable("service_detail") { backStackEntry ->
+            ServiceDetailScreen(navController)
+        }
+
+        composable("navigation_screen") { NavigationScreen() }
 
     }
 }
