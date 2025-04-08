@@ -26,20 +26,20 @@ fun BottomNavBar(navController: NavHostController) {
             onClick = { navController.navigate("map")}
         )
         NavigationBarItem(
-            icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Biomes") },
+            icon = { Icon(painterResource(id = R.drawable.rabbit), contentDescription = "Biomes") },
             label = { Text("Enclos") },
             selected = currentRoute == "enclosures_screen",
             onClick = { navController.navigate("enclosures_screen") }
         )
         NavigationBarItem(
-            icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Services") },
+            icon = { Icon(painterResource(id = R.drawable.cafe), contentDescription = "Services") },
             label = { Text("Services") },
             selected = currentRoute == "services_screen",
             onClick = { navController.navigate("services_screen") }
         )
         NavigationBarItem(
-            icon = { Icon(painterResource(id = R.drawable.jsp), contentDescription = "Navigation") },
-            label = { Text("Navigation") },
+            icon = { Icon(painterResource(id = R.drawable.guide), contentDescription = "Navigation") },
+            label = { Text("Guide") },
             selected = currentRoute == "navigation_screen",
             onClick = { navController.navigate("navigation_screen") }
         )
