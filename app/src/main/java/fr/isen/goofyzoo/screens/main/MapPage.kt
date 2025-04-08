@@ -34,11 +34,16 @@ fun MapPage() {
             mapView.setScrollableAreaLimitDouble(limitBox)
 
             //le vallon des cascades
-            val vallonPolygon = Polygon()
-            vallonPolygon.fillColor = Color.argb(140, 164, 189, 204)
-            vallonPolygon.strokeColor = Color.rgb(164,189,204)
-            vallonPolygon.strokeWidth = 10f
-            vallonPolygon.points = listOf(
+            val polygonVallon = Polygon()
+            polygonVallon.fillPaint.color = Color.argb(140, 164, 189, 204)
+
+            polygonVallon.outlinePaint.apply {
+                color = Color.rgb(164,189,204)
+                strokeWidth = 10f
+            }
+
+
+            polygonVallon.points = listOf(
                 GeoPoint(43.62671, 5.205213),
                 GeoPoint(43.626508, 5.205476),
                 GeoPoint(43.626446, 5.205454),
@@ -126,8 +131,8 @@ fun MapPage() {
 
 
 
-            val belvederePolygon = Polygon()
-            belvederePolygon.points = listOf(
+            val polygonBelvedere = Polygon()
+            polygonBelvedere.points = listOf(
                 GeoPoint(43.626713, 5.205224),
                 GeoPoint(43.626886, 5.207077),
                 GeoPoint(43.626423, 5.207997),
@@ -172,10 +177,11 @@ fun MapPage() {
                 GeoPoint(43.626508, 5.20547),
                 GeoPoint(43.626694, 5.20524)
             )
-            belvederePolygon.fillColor = Color.argb(140, 181, 165, 137)
-            belvederePolygon.strokeColor = Color.rgb(181,165,137)
-            belvederePolygon.strokeWidth = 10f
-
+            polygonBelvedere.fillPaint.color = Color.argb(140, 181, 165, 137)
+            polygonBelvedere.outlinePaint.apply {
+                color = Color.rgb(181,165,137)
+                strokeWidth = 10f
+            }
 
 
             val labelBelvedere = Marker(mapView).apply {
@@ -188,12 +194,16 @@ fun MapPage() {
 
 
 
-            val plateauPolygon = Polygon()
-            plateauPolygon.fillPaint.color = Color.argb(140, 226, 165, 157)
-            plateauPolygon.strokeColor = Color.rgb(226, 165, 157)
-            plateauPolygon.strokeWidth = 10f
+            val polygonPlateau = Polygon()
+            polygonPlateau.fillPaint.color = Color.argb(140, 226, 165, 157)
+            polygonPlateau.outlinePaint.apply {
+                color = Color.rgb(226, 165, 157)
+                strokeWidth = 10f
+            }
 
-            plateauPolygon.points = listOf(
+
+
+            polygonPlateau.points = listOf(
                 GeoPoint(43.625912, 5.205661),
                 GeoPoint(43.625881, 5.205722),
                 GeoPoint(43.625632, 5.206468),
@@ -292,8 +302,12 @@ fun MapPage() {
 
             val polygonClairieres = Polygon()
             polygonClairieres.fillPaint.color = Color.argb(140, 226, 202, 157)
-            polygonClairieres.strokeColor = Color.rgb(226,202,157)
-            polygonClairieres.strokeWidth = 10f
+
+            polygonClairieres.outlinePaint.apply {
+                color = Color.rgb(226,202,157)
+                strokeWidth = 10f
+            }
+
 
             polygonClairieres.points = listOf(
                 GeoPoint(43.624578, 5.210355),
@@ -391,10 +405,13 @@ fun MapPage() {
 
 
             val polygonBoisDesPins = Polygon()
-            polygonBoisDesPins.title = "le Bois des Pins"
             polygonBoisDesPins.fillPaint.color = Color.argb(140, 197, 226, 157)
-            polygonBoisDesPins.strokeColor = Color.rgb(197, 226, 157)
-            polygonBoisDesPins.strokeWidth = 10f
+
+            polygonBoisDesPins.outlinePaint.apply {
+                color = Color.rgb(197, 226, 157)
+                strokeWidth = 10f
+            }
+
             polygonBoisDesPins.points = listOf(
                 GeoPoint(43.621812, 5.214732),
                 GeoPoint(43.621305, 5.213766),
@@ -459,13 +476,13 @@ fun MapPage() {
 
 
 
-            mapView.overlays.add(vallonPolygon)
+            mapView.overlays.add(polygonVallon)
             mapView.overlays.add(labelVallon)
 
-            mapView.overlays.add(belvederePolygon)
+            mapView.overlays.add(polygonBelvedere)
             mapView.overlays.add(labelBelvedere)
 
-            mapView.overlays.add(plateauPolygon)
+            mapView.overlays.add(polygonPlateau)
             mapView.overlays.add(labelPlateau)
 
             mapView.overlays.add(polygonClairieres)
