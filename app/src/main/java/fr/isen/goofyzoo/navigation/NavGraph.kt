@@ -18,7 +18,7 @@ import fr.isen.goofyzoo.screens.profil.ProfileScreen
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier, userId: String, username: String) {
     NavHost(navController = navController, startDestination = "home", modifier = modifier) {
         composable("home") { HomePage(navController) }
-        composable("profile_screen") { ProfileScreen(navController,userId,username) }
+        composable("profile_screen") { ProfileScreen(navController,userId) }
         composable("map") { MapPage() }
 
         composable("enclosures_screen") { EnclosuresListScreen(navController) }

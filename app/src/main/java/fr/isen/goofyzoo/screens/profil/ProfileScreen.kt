@@ -1,7 +1,10 @@
 package fr.isen.goofyzoo.screens.profil
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -9,24 +12,37 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
+import fr.isen.goofyzoo.AuthActivity
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Review
 
 @Composable
-fun ProfileScreen(navController: NavHostController, UserId: String, Username: String) {
+fun ProfileScreen(navController: NavHostController, UserId: String) {
+    var usernameState by remember { mutableStateOf("") }
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
-    val database = FirebaseDatabase.getInstance().reference
+    var showEditField by remember { mutableStateOf(false) }
+    var newUsername by remember { mutableStateOf("") }
 
-    // Récupérer les avis de l'utilisateur
+    val database = FirebaseDatabase.getInstance().reference
+    val context = LocalContext.current
+
     LaunchedEffect(UserId) {
+        // Récupérer le nom d'utilisateur
+        database.child("users").child(UserId).child("username").get().addOnSuccessListener { snapshot ->
+            snapshot.getValue(String::class.java)?.let {
+                usernameState = it
+            }
+        }
+
+        // Récupérer les avis
         database.child("users").child(UserId).child("reviews").get().addOnSuccessListener { snapshot ->
             reviews = snapshot.children.mapNotNull { it.getValue<Review>() }
         }.addOnFailureListener { error ->
@@ -34,16 +50,17 @@ fun ProfileScreen(navController: NavHostController, UserId: String, Username: St
         }
     }
 
+    // Ajout de la scrollabilité
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()), // Rendre la colonne scrollable
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Titre de la page
         Text(
-            text = "Profil de $Username",
+            text = "Profil de $usernameState",
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -52,12 +69,12 @@ fun ProfileScreen(navController: NavHostController, UserId: String, Username: St
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Affichage des avis de l'utilisateur
+        // Affichage des avis
         if (reviews.isNotEmpty()) {
             Text(
                 text = "Vos avis",
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             reviews.forEach { review ->
@@ -69,28 +86,21 @@ fun ProfileScreen(navController: NavHostController, UserId: String, Username: St
                     elevation = CardDefaults.cardElevation(4.dp),
                     colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.LightBrown))
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = "Enclos n°${review.enclosureId}",
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Affichage des étoiles
-                            for (i in 1..5) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            repeat(5) { i ->
                                 Icon(
                                     imageVector = Icons.Filled.Star,
-                                    contentDescription = "$i étoiles",
-                                    tint = if (i <= review.rating) Color.Yellow else Color.Gray
+                                    contentDescription = "${i + 1} étoiles",
+                                    tint = if (i < review.rating) Color.Yellow else Color.Gray
                                 )
                             }
                         }
-
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = review.comment,
@@ -107,25 +117,59 @@ fun ProfileScreen(navController: NavHostController, UserId: String, Username: St
             )
         }
 
-        // Boutons pour modifier le profil et déconnexion
-        Spacer(modifier = Modifier.weight(1f)) // Push buttons to bottom
+        Spacer(modifier = Modifier.weight(1f))
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Bouton de modification de profil
             Button(
-                onClick = { /* TODO: Action pour modifier le profil */ },
+                onClick = {
+                    showEditField = !showEditField
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Brown))
             ) {
-                Text("Modifier le profil")
+                Text(if (showEditField) "Annuler" else "Modifier le profil")
             }
 
-            // Bouton de déconnexion
+            if (showEditField) {
+                OutlinedTextField(
+                    value = newUsername,
+                    onValueChange = { newUsername = it },
+                    label = { Text("Nouveau nom d'utilisateur") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+
+                Button(
+                    onClick = {
+                        if (newUsername.isNotBlank()) {
+                            database.child("users").child(UserId).child("username").setValue(newUsername)
+                                .addOnSuccessListener {
+                                    usernameState = newUsername
+                                    showEditField = false
+                                }
+                                .addOnFailureListener {
+                                    println("Erreur lors de la mise à jour du nom d'utilisateur : ${it.message}")
+                                }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Brown))
+                ) {
+                    Text("Valider")
+                }
+            }
+
             Button(
-                onClick = { /* TODO: Action pour se déconnecter */ },
+                onClick = {
+                    val intent = Intent(context, AuthActivity::class.java)
+                    context.startActivity(intent)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Saffron))
