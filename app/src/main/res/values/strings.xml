@@ -1,3 +1,76 @@
 <resources>
     <string name="app_name">GoofyZoo</string>
+
+<!-- Auth -->
+    <!--login -->
+    <string name="log_bienvenue">Connexion</string>
+    <string name="log_connexion">Se connecter</string>
+    <string name="log_champ1">Email</string>
+    <string name="log_champ2">Mot de passe</string>
+    <string name="log_inscription">Pas de compte ? Inscrivez vous</string>
+    <!--register -->
+    <string name="reg_bienvenue">Inscription</string>
+    <string name="reg_inscription">s inscrire</string>
+    <string name="reg_champ1">Nom utilisateur</string>
+    <string name="reg_champ2">Email</string>
+    <string name="reg_champ3">Mot de passe</string>
+    <string name="reg_connexion">Déjà un compte ? Connectez vous</string>
+
+<!-- Main -->
+    <!-- Home -->
+    <string name="home_bienvenue">Bienvenue au Zoo de la Barben</string>
+    <string name="home_champ1">Découvrez les animaux, explorez les enclos, laissez un avis, et vivez une aventure inoubliable !</string>
+    <string name="home_bouton1">Explorez les enclos</string>
+    <string name="home_bouton2">Voir le plan du parc</string>
+
+    <!-- Map Page -->
+    <string name="map_champ1_1">Masquer les biômes</string>
+    <string name="map_champ1_2">Afficher les biômes</string>
+    <string name="r">f</string>
+    <!-- A finir !!!!-->
+
+<!-- Admin -->
+    <!-- -->
+
+<!-- Employee -->
+    <!-- -->
+
+<!-- Profil -->
+
+    <string name="profile_champ1">Vos avis</string>
+    <string name="profile_no_comment">Aucun avis trouvé.</string>
+    <string name="profile_button1">Modifier le profil</string>
+    <string name="profile_placeholder">Entrez le nouveau nom d utilisateur</string>
+    <string name="profile_annuler">Annuler</string>
+    <string name="profile_valider">Valider</string>
+    <string name="profile_button2">Se déconnecter</string>
+
+
+<!-- Enclosure -->
+    <!--list -->
+    <string name="encloL_Titre">Liste des enclos</string>
+    <string name="encloL_SousTitre1">Enclos :</string>
+    <!--details -->
+    <string name="encloD_champ1">Votre avis</string>
+    <string name="encloD_placeholder">Votre commentaire :</string>
+    <string name="encloD_button">Envoyer</string>
+    <string name="encloD_champ2">Avis des visiteurs</string>
+    <string name="encloD_button2">Supprimer</string>
+
+
+
+
+    <!-- Service -->
+    <!-- -->
+    <string name="serviceL_titre">Liste des enclos</string>
+    <string name="serviceL_sousTitre">Enclos :</string>
+
+<!-- Navigation -->
+    <!--NavBar -->
+    <string name="navbar_champ1">Home</string>
+    <string name="navbar_champ2">Carte</string>
+    <string name="navbar_champ3">Enclos</string>
+    <string name="navbar_champ4">Services</string>
+
+
 </resources>

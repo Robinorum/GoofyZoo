@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -32,6 +33,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
 
 @Composable
@@ -68,7 +70,7 @@ fun ServicesListScreen(navController: NavHostController) {
         } else {
             item {
                 Text(
-                    text = "Liste des services",
+                    text = stringResource(R.string.serviceL_titre),
                     style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
                     modifier = Modifier
                         .padding(bottom = 16.dp)
@@ -93,7 +95,7 @@ fun ServicesListScreen(navController: NavHostController) {
                     )
 
                     Text(
-                        text = "Services:",
+                        text = stringResource(R.string.serviceL_sousTitre),
                         style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                     )

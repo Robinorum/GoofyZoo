@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
@@ -72,7 +73,7 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
         // Affichage des avis
         if (reviews.isNotEmpty()) {
             Text(
-                text = "Vos avis",
+                text = stringResource(R.string.profile_champ1),
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -111,7 +112,7 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
             }
         } else {
             Text(
-                text = "Aucun avis trouvé.",
+                text = stringResource(R.string.profile_no_comment),
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -131,14 +132,14 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Brown))
             ) {
-                Text(if (showEditField) "Annuler" else "Modifier le profil")
+                Text(if (showEditField) stringResource(R.string.profile_annuler) else stringResource(R.string.profile_button1))
             }
 
             if (showEditField) {
                 OutlinedTextField(
                     value = newUsername,
                     onValueChange = { newUsername = it },
-                    label = { Text("Nouveau nom d'utilisateur") },
+                    label = { Text(stringResource(R.string.profile_placeholder)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
@@ -161,7 +162,7 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Brown))
                 ) {
-                    Text("Valider")
+                    Text(stringResource(R.string.profile_valider))
                 }
             }
 
@@ -174,7 +175,7 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Saffron))
             ) {
-                Text("Se déconnecter")
+                Text(stringResource(R.string.profile_button2))
             }
         }
     }

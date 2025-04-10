@@ -1,17 +1,23 @@
 package fr.isen.goofyzoo.screens.auth
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import fr.isen.goofyzoo.models.User
+import fr.isen.goofyzoo.R
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -28,58 +34,72 @@ fun RegisterScreen(navController: NavController) {
     }
 
     fun isValidPassword(password: String): Boolean {
-        val passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\|,.<>/?]).{7,}$"
-        return password.matches(passwordPattern.toRegex())
+        val pattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\|,.<>/?]).{7,}$"
+        return password.matches(pattern.toRegex())
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(colorResource(id = R.color.LightBrown))
+            .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Text(text = "Register")
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .height(120.dp)
+                .padding(bottom = 24.dp),
+            contentScale = ContentScale.Fit
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.reg_bienvenue),
+            color = colorResource(id = R.color.Brown),
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text(stringResource(R.string.reg_champ1), color = colorResource(id = R.color.Brown)) },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.reg_champ2), color = colorResource(id = R.color.Brown)) },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id= R.string.reg_champ3), color = colorResource(id = R.color.Brown)) },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
                 if (email.isEmpty() || !isValidEmail(email)) {
-                    errorMessage = "Please enter a valid email address."
+                    errorMessage = "Veuillez entrer une adresse email valide."
                     return@Button
                 }
 
                 if (password.isEmpty() || !isValidPassword(password)) {
-                    errorMessage = "Password must be at least 7 characters long, include at least one uppercase letter, one digit, and one special character."
+                    errorMessage = "Mot de passe trop faible. Il doit contenir au moins 7 caractères, une majuscule, un chiffre et un caractère spécial."
                     return@Button
                 }
 
@@ -93,7 +113,7 @@ fun RegisterScreen(navController: NavController) {
                                 "id" to userId,
                                 "username" to username,
                                 "email" to email,
-                                "admin" to false // Par défaut, l'utilisateur n'est pas admin
+                                "admin" to false
                             )
 
                             database.child("users").child(userId).setValue(userData)
@@ -101,29 +121,43 @@ fun RegisterScreen(navController: NavController) {
                                     if (dbTask.isSuccessful) {
                                         navController.navigate("login")
                                     } else {
-                                        errorMessage = dbTask.exception?.localizedMessage ?: "Unknown error"
+                                        errorMessage = dbTask.exception?.localizedMessage ?: "Erreur lors de l'enregistrement"
                                     }
                                 }
                         } else {
-                            errorMessage = task.exception?.localizedMessage ?: "Unknown error"
+                            errorMessage = task.exception?.localizedMessage ?: "Erreur d'inscription"
                         }
                     }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.Saffron)
+            )
         ) {
-            Text("Register")
+            Text(
+                text = stringResource( R.string.reg_inscription),
+                color = colorResource(id = R.color.Brown)
+            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         if (errorMessage.isNotEmpty()) {
-            Text(text = errorMessage, color = Color.Red)
+            Text(
+                text = errorMessage,
+                color = Color.Red
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         TextButton(onClick = { navController.navigate("login") }) {
-            Text("Already have an account? Login")
+            Text(
+                text = stringResource(id = R.string.reg_connexion),
+                color = colorResource(id = R.color.Brown)
+            )
         }
     }
 }

@@ -11,11 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
+import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Enclosure
 import fr.isen.goofyzoo.models.Review
 
@@ -28,12 +31,9 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
     var reviewText by remember { mutableStateOf("") }
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     val database = FirebaseDatabase.getInstance().reference
-
-    var isEditing by remember { mutableStateOf(false) }
-    var reviewBeingEdited by remember { mutableStateOf<Review?>(null) }
+    var errorMessage by remember { mutableStateOf("") }
 
 
-    // Vérifier si l'utilisateur a déjà posté un avis
     val hasUserReviewed by remember(reviews, userId) {
         derivedStateOf {
             reviews.any { it.userId == userId }
@@ -79,7 +79,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
 
-            // Affichage du statut de l'enclos
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,7 +94,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 )
             }
 
-            // Affichage des animaux dans l'enclos
             it.animals.forEach { animal ->
                 Card(
                     modifier = Modifier
@@ -116,14 +114,12 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Section "Votre avis"
             Text(
-                text = "Votre avis:",
+                text = stringResource(R.string.encloD_champ1),
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Affichage du champ d'avis uniquement si l'utilisateur n'a pas encore posté
             if (!hasUserReviewed) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -143,11 +139,19 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 OutlinedTextField(
                     value = reviewText,
                     onValueChange = { reviewText = it },
-                    label = { Text("Votre commentaire") },
+                    label = { Text(stringResource(R.string.encloD_placeholder)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
+                if (errorMessage.isNotBlank()) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
 
                 Button(
                     onClick = {
@@ -182,17 +186,23 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                             rating = 0
                             reviewText = ""
                         }
+                        else{
+                            errorMessage = "Veuillez sélectionner au moins une étoile et mettre un commentaire."
+
+                        }
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
+
                 ) {
-                    Text("Envoyer")
-                }
+                    Text(
+                        text = stringResource(R.string.encloD_button),
+                    )                }
             } else {
                 val userReview = reviews.firstOrNull { it.userId == userId }
                 if (userReview != null) {
-                    // Affichage de l'avis de l'utilisateur dans un encadré
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -226,9 +236,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                             ) {
                                 Button(
                                     onClick = {
-                                        // Logique pour supprimer l'avis
                                         userReview?.let { review ->
-                                            // Récupérer la référence de la base de données
                                             database.child("zoo").get().addOnSuccessListener { snapshot ->
                                                 for (biomeSnapshot in snapshot.children) {
                                                     val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
@@ -236,11 +244,9 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                                         for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
                                                             val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
                                                             if (enclosureId == enclosure?.id) {
-                                                                // Trouver l'avis à supprimer dans l'enclos
                                                                 val reviewRef = enclosureSnapshot.child("reviews").children.firstOrNull {
                                                                     it.getValue<Review>()?.id == review.id
                                                                 }?.ref
-                                                                // Supprimer l'avis de l'enclos
                                                                 reviewRef?.removeValue()
                                                             }
                                                         }
@@ -250,12 +256,10 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                                 println("Erreur lors de la suppression dans l'enclos: ${error.message}")
                                             }
 
-                                            // Supprimer l'avis de la collection de l'utilisateur
                                             database.child("users").child(userId).child("reviews").get().addOnSuccessListener { userSnapshot ->
                                                 userSnapshot.children.firstOrNull {
                                                     it.getValue<Review>()?.id == review.id
                                                 }?.ref?.removeValue()?.addOnSuccessListener {
-                                                    // Mettre à jour la liste locale des avis
                                                     reviews = reviews.filter { it.id != review.id }
                                                 }
                                             }.addOnFailureListener { error ->
@@ -265,7 +269,11 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                     },
                                     modifier = Modifier.width(100.dp)
                                 ) {
-                                    Text("Supprimer")
+                                    Text(
+                                        text = stringResource(R.string.encloD_button2),
+                                        color = Color.Red
+                                    )
+
                                 }
                             }
                         }
@@ -275,14 +283,12 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Section "Avis des visiteurs"
             Text(
-                text = "Avis des visiteurs:",
+                text = stringResource(R.string.encloD_champ2),
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Affichage des avis des autres utilisateurs
             reviews.filter { it.userId != userId }.forEach { review ->
                 Card(
                     modifier = Modifier

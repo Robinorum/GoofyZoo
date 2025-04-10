@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,7 +21,6 @@ import fr.isen.goofyzoo.R
 @Composable
 fun HomePage(navController: NavHostController,) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Bouton Profil en haut à droite
         Button(
             onClick = {navController.navigate("profile_screen") },
             shape = CircleShape,
@@ -39,7 +39,6 @@ fun HomePage(navController: NavHostController,) {
             )
         }
 
-        // Contenu principal
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,7 +47,7 @@ fun HomePage(navController: NavHostController,) {
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Text(
-                text = "Bienvenue au Zoo de la Barben 🐾",
+                text = stringResource(R.string.home_bienvenue),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
@@ -66,7 +65,7 @@ fun HomePage(navController: NavHostController,) {
             )
 
             Text(
-                text = "Découvrez les animaux, explorez les enclos, laissez un avis, et vivez une aventure inoubliable !",
+                text = stringResource(R.string.home_champ1),
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                 color = Color.DarkGray,
                 modifier = Modifier.padding(16.dp)
@@ -82,7 +81,7 @@ fun HomePage(navController: NavHostController,) {
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.Brown))
                 ) {
-                    Text("Explorer les enclos")
+                    Text(stringResource(R.string.home_bouton1))
                 }
 
                 Button(
@@ -91,7 +90,7 @@ fun HomePage(navController: NavHostController,) {
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.LightBrown))
                 ) {
-                    Text("Voir le plan du parc")
+                    Text(stringResource(R.string.home_bouton2))
                 }
             }
         }

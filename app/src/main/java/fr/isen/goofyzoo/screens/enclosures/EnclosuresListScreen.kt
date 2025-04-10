@@ -12,10 +12,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.database.*
+import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
 
 
@@ -53,7 +55,7 @@ fun EnclosuresListScreen(navController: NavHostController) {
         } else {
             item {
                 Text(
-                    text = "Liste des enclos",
+                    text = stringResource(R.string.encloL_Titre),
                     style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
                     modifier = Modifier
                         .padding(bottom = 16.dp)
@@ -79,7 +81,7 @@ fun EnclosuresListScreen(navController: NavHostController) {
                     )
 
                     Text(
-                        text = "Enclos:",
+                        text = stringResource(R.string.encloL_SousTitre1),
                         style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                     )

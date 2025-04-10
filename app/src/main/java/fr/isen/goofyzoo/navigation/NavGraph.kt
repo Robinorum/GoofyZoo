@@ -9,7 +9,6 @@ import fr.isen.goofyzoo.screens.enclosures.EnclosuresListScreen
 import fr.isen.goofyzoo.screens.enclosures.EnclosureDetailScreen
 import fr.isen.goofyzoo.screens.main.HomePage
 import fr.isen.goofyzoo.screens.main.MapPage
-import fr.isen.goofyzoo.screens.main.NavigationScreen
 import fr.isen.goofyzoo.screens.services.ServiceDetailScreen
 import fr.isen.goofyzoo.screens.services.ServicesListScreen
 import fr.isen.goofyzoo.screens.profil.ProfileScreen
@@ -31,7 +30,6 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
             ServiceDetailScreen(navController)
         }
 
-        composable("navigation_screen") { NavigationScreen() }
 
     }
 }
