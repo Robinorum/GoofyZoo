@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,7 +96,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
         )
 
         Text(
-            text = "Tableau de Bord Employé",
+            text = stringResource(R.string.employee_welcome),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -110,7 +111,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
             if (enclosuresToFeed.isEmpty()) {
                 item {
                     Text(
-                        text = "Il n'y a plus de nourrissage prévu pour aujourd'hui.",
+                        text = stringResource(R.string.empty_feeding),
                         color = Color.Gray,
                         fontSize = 16.sp,
                         modifier = Modifier
@@ -138,7 +139,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
                 .height(50.dp)
         ) {
             Text(
-                text = "Voir le planning complet",
+                text = stringResource(R.string.employee_button1),
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold

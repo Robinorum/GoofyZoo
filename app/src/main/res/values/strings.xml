@@ -10,7 +10,7 @@
     <string name="log_inscription">Pas de compte ? Inscrivez vous</string>
     <!--register -->
     <string name="reg_bienvenue">Inscription</string>
-    <string name="reg_inscription">s inscrire</string>
+    <string name="reg_inscription">S\'inscrire</string>
     <string name="reg_champ1">Nom utilisateur</string>
     <string name="reg_champ2">Email</string>
     <string name="reg_champ3">Mot de passe</string>
@@ -36,11 +36,23 @@
 
 <!-- Admin -->
     <!-- -->
-
+    <string name="admin_welcome">Tableau de Bord Admin</string>
+    <string name="admin_button1">Gestion de la Maintenance</string>
+    <string name="admin_button1_desc">Maintenance</string>
+    <string name="admin_button2">Gestion des Horaires de Nourrissage</string>
+    <string name="admin_button2_desc">Nourrissage</string>
+    <string name="admin_hour">Heure :</string>
+    <string name="admin_define_hour">Définir l\'heure</string>
+    <string name="maintenance_button">Gestion de la maintenance des enclos</string>
 <!-- Employee -->
     <!-- -->
+    <string name="employee_welcome">Tableau de Bord Employé</string>
+    <string name="empty_feeding">Il n\'y a plus de nourrissage prévu pour aujourd\'hui.</string>
+    <string name="employee_button1">Voir le planning complet</string>
+    <string name="employee_hour">Heure :</string>
+    <string name="feeding_hour">Horaires de nourrissage</string>
 
-<!-- Profil -->
+    <!-- Profil -->
 
     <string name="profile_champ1">Vos avis</string>
     <string name="profile_no_comment">Aucun avis trouvé.</string>

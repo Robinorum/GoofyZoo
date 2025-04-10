@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.*
+import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
 import fr.isen.goofyzoo.models.Enclosure
 
@@ -43,7 +45,7 @@ fun AllSchedule() {
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            text = "Horaires de nourrissage",
+            text = stringResource(R.string.feeding_hour),
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -132,7 +134,7 @@ fun FeedingItem(enclosure: Enclosure) {
                 )
                 Text(
                     buildAnnotatedString {
-                        append("Heure : ")
+                        append(stringResource(R.string.employee_hour))
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Bold,

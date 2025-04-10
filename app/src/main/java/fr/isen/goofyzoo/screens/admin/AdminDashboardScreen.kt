@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +33,7 @@ fun AdminDashboardScreen(navController: NavController) {
 
 
         Text(
-            text = "Tableau de Bord Admin",
+            text = stringResource(R.string.admin_welcome),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -44,9 +45,9 @@ fun AdminDashboardScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
         ) {
-            Icon(painter = painterResource(id = R.drawable.hammer), contentDescription = "Maintenance", tint = Color.White)
+            Icon(painter = painterResource(id = R.drawable.hammer), contentDescription = stringResource(R.string.admin_button1_desc), tint = Color.White)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Gestion de la Maintenance", color = Color.White)
+            Text(stringResource(R.string.admin_button1), color = Color.White)
         }
 
         Button(
@@ -54,9 +55,9 @@ fun AdminDashboardScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
         ) {
-            Icon(painter = painterResource(id = R.drawable.burger), contentDescription = "Nourrissage", tint = Color.White)
+            Icon(painter = painterResource(id = R.drawable.burger), contentDescription = stringResource(R.string.admin_button2_desc), tint = Color.White)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Gestion des Horaires de Nourrissage", color = Color.White)
+            Text(stringResource(R.string.admin_button2), color = Color.White)
         }
     }
 }

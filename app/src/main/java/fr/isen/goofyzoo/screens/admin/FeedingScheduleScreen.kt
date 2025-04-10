@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +49,7 @@ fun FeedingScheduleScreen() {
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            text = "Gestion des horaires de nourrissage",
+            text = stringResource(R.string.admin_button2),
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -145,7 +146,7 @@ fun FeedingItem(enclosure: Enclosure, onTimePicked: (String) -> Unit, context: C
                 )
                 Text(
                     buildAnnotatedString {
-                        append("Heure : ")
+                        append(stringResource(R.string.admin_hour))
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Bold,
@@ -163,7 +164,7 @@ fun FeedingItem(enclosure: Enclosure, onTimePicked: (String) -> Unit, context: C
 
             Icon(
                 painter = painterResource(id = R.drawable.clock),
-                contentDescription = "Définir l'heure",
+                contentDescription = stringResource(R.string.admin_define_hour),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
