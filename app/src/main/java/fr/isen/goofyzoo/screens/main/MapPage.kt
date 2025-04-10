@@ -1,6 +1,5 @@
 package fr.isen.goofyzoo.screens.main
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -11,7 +10,6 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -20,7 +18,6 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.text.font.Typeface
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
@@ -41,7 +38,7 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Polyline
 import fr.isen.goofyzoo.R
 
-@SuppressLint("SetTextI18n")
+
 @Composable
 fun MapPage() {
     val showPolygons = remember { mutableStateOf(true) }
@@ -55,6 +52,7 @@ fun MapPage() {
     val startSpinnerRef = remember { mutableStateOf<Spinner?>(null) }
     val endSpinnerRef = remember { mutableStateOf<Spinner?>(null) }
     val enclosureListRef = remember { mutableStateOf(emptyList<Pair<String, GeoPoint>>()) }
+    val spinnerContainerRef = remember { mutableStateOf<LinearLayout?>(null) }
 
 
     LaunchedEffect(Unit) {
@@ -127,8 +125,8 @@ fun MapPage() {
 
             mapView.setTileSource(TileSourceFactory.MAPNIK)
             mapView.setMultiTouchControls(true)
-            mapView.controller.setZoom(17.0)
-            mapView.minZoomLevel = 17.0
+            mapView.controller.setZoom(16.0)
+            mapView.minZoomLevel = 16.0
             startPoint.value?.let { mapView.controller.setCenter(it) }
 
             val limitBox = BoundingBox(43.63380, 5.21964, 43.61380, 5.19964)
@@ -137,20 +135,20 @@ fun MapPage() {
             frameLayout.addView(mapView)
 
 
-//            val toggleButton = Button(ctx).apply {
-//                text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
-//                setBackgroundColor(Color.argb(180, 0, 0, 0))
-//                setTextColor(Color.WHITE)
-//                textSize = 12f
-//            }
-//            val buttonParams = FrameLayout.LayoutParams(
-//                FrameLayout.LayoutParams.WRAP_CONTENT,
-//                FrameLayout.LayoutParams.WRAP_CONTENT
-//            ).apply {
-//                gravity = Gravity.BOTTOM or Gravity.END
-//                setMargins(20, 0, 20, 180)
-//            }
-//            frameLayout.addView(toggleButton, buttonParams)
+            val toggleButton = Button(ctx).apply {
+                text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+                setBackgroundColor(Color.argb(180, 0, 0, 0))
+                setTextColor(Color.WHITE)
+                textSize = 12f
+            }
+            val buttonParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(20, 0, 20, 180)
+            }
+            frameLayout.addView(toggleButton, buttonParams)
 
 
             val toggleRouteButton = Button(ctx).apply {
@@ -211,6 +209,7 @@ fun MapPage() {
                 addView(startColumn, params)
                 addView(endColumn, params)
             }
+            spinnerContainerRef.value = spinnerContainer
 
             val containerParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -334,16 +333,17 @@ fun MapPage() {
             }
 
 
-//            fun updatePolygonsVisibility() {
-//                mapView.overlays.removeAll(polygons.map { it.first } + polygons.map { it.second })
-//                if (showPolygons.value) {
-//                    polygons.forEach { (polygon, label) ->
-//                        mapView.overlays.add(polygon)
-//                        mapView.overlays.add(label)
-//                    }
-//                }
-//                toggleButton.text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
-//            }
+            fun updatePolygonsVisibility() {
+                mapView.overlays.removeAll(polygons.map { it.first } + polygons.map { it.second })
+                if (showPolygons.value) {
+                    polygons.forEach { (polygon, label) ->
+                        mapView.overlays.add(polygon)
+                        mapView.overlays.add(label)
+                    }
+                }
+                toggleButton.text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+                mapView.invalidate()
+            }
 
             fun setupPolygonsLayer() {
                 polygons.forEach { (polygon, label) ->
@@ -367,18 +367,17 @@ fun MapPage() {
 
                 toggleRouteButton.text = if (showRoute.value) "Masquer l'itinéraire" else "Afficher l'itinéraire"
 
-                startSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
-                endSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
+                spinnerContainerRef.value?.visibility = if (showRoute.value) View.VISIBLE else View.GONE
 
                 mapView.invalidate()
             }
 
 
 
-//            toggleButton.setOnClickListener {
-//                showPolygons.value = !showPolygons.value
-//                updatePolygonsVisibility()
-//            }
+            toggleButton.setOnClickListener {
+                showPolygons.value = !showPolygons.value
+                updatePolygonsVisibility()
+            }
 
             toggleRouteButton.setOnClickListener {
                 showRoute.value = !showRoute.value
