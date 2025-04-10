@@ -26,7 +26,12 @@
     <!-- Map Page -->
     <string name="map_champ1_1">Masquer les biômes</string>
     <string name="map_champ1_2">Afficher les biômes</string>
-    <string name="r">f</string>
+    <string name="map_champ2_1">Masquer l\'itinéraire</string>
+    <string name="map_champ2_2">Afficher l\'itinéraire</string>
+    <string name="map_spinner_1">Départ</string>
+    <string name="map_spinner_2">Arrivée</string>
+    <string name="itinerary_title">Itinéraire</string>
+    <string name="itinerary_handicape_title">Itinéraire Handicapé</string>
     <!-- A finir !!!!-->
 
 <!-- Admin -->
@@ -62,8 +67,8 @@
 
     <!-- Service -->
     <!-- -->
-    <string name="serviceL_titre">Liste des enclos</string>
-    <string name="serviceL_sousTitre">Enclos :</string>
+    <string name="serviceL_titre">Liste des services</string>
+    <string name="serviceL_sousTitre">Services :</string>
 
 <!-- Navigation -->
     <!--NavBar -->

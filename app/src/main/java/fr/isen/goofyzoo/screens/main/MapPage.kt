@@ -1,5 +1,6 @@
 package fr.isen.goofyzoo.screens.main
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -7,14 +8,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.font.Typeface
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
@@ -33,7 +39,9 @@ import fr.isen.goofyzoo.utils.ZooGraph
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Polyline
+import fr.isen.goofyzoo.R
 
+@SuppressLint("SetTextI18n")
 @Composable
 fun MapPage() {
     val showPolygons = remember { mutableStateOf(true) }
@@ -120,6 +128,7 @@ fun MapPage() {
             mapView.setTileSource(TileSourceFactory.MAPNIK)
             mapView.setMultiTouchControls(true)
             mapView.controller.setZoom(17.0)
+            mapView.minZoomLevel = 17.0
             startPoint.value?.let { mapView.controller.setCenter(it) }
 
             val limitBox = BoundingBox(43.63380, 5.21964, 43.61380, 5.19964)
@@ -128,24 +137,24 @@ fun MapPage() {
             frameLayout.addView(mapView)
 
 
-            val toggleButton = Button(ctx).apply {
-                text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
-                setBackgroundColor(Color.argb(180, 0, 0, 0))
-                setTextColor(Color.WHITE)
-                textSize = 12f
-            }
-            val buttonParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.BOTTOM or Gravity.END
-                setMargins(20, 0, 20, 180)
-            }
-            frameLayout.addView(toggleButton, buttonParams)
+//            val toggleButton = Button(ctx).apply {
+//                text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+//                setBackgroundColor(Color.argb(180, 0, 0, 0))
+//                setTextColor(Color.WHITE)
+//                textSize = 12f
+//            }
+//            val buttonParams = FrameLayout.LayoutParams(
+//                FrameLayout.LayoutParams.WRAP_CONTENT,
+//                FrameLayout.LayoutParams.WRAP_CONTENT
+//            ).apply {
+//                gravity = Gravity.BOTTOM or Gravity.END
+//                setMargins(20, 0, 20, 180)
+//            }
+//            frameLayout.addView(toggleButton, buttonParams)
 
 
             val toggleRouteButton = Button(ctx).apply {
-                text = if (showRoute.value) "Masquer l'itinéraire" else "Afficher l'itinéraire"
+                text = if (showRoute.value) R.string.map_champ2_1.toString() else R.string.map_champ2_2.toString()
                 setBackgroundColor(Color.argb(180, 0, 0, 0))
                 setTextColor(Color.WHITE)
                 textSize = 12f
@@ -159,37 +168,60 @@ fun MapPage() {
             }
             frameLayout.addView(toggleRouteButton, routeButtonParams)
 
-
-            val startSpinner = Spinner(ctx).apply {
-                setBackgroundColor(Color.argb(180, 255, 255, 255))
-                minimumWidth = 300
-            }
-            val endSpinner = Spinner(ctx).apply {
-                setBackgroundColor(Color.argb(180, 255, 255, 255))
-                minimumWidth = 300
-            }
-
-
+            val startSpinner = Spinner(ctx)
+            val endSpinner = Spinner(ctx)
             startSpinnerRef.value = startSpinner
             endSpinnerRef.value = endSpinner
 
-            val startParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                setMargins(20, 20, 20, 0)
+            val startLabel = TextView(ctx).apply {
+                text = "Départ"
+                setTextColor(Color.BLACK)
+                textSize = 14f
             }
-            val endParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                setMargins(20, 80, 20, 0)
+            val endLabel = TextView(ctx).apply {
+                text = "Arrivée"
+                setTextColor(Color.BLACK)
+                textSize = 14f
             }
 
-            frameLayout.addView(startSpinner, startParams)
-            frameLayout.addView(endSpinner, endParams)
+            val startColumn = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(startLabel)
+                addView(startSpinner)
+            }
+            val endColumn = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(endLabel)
+                addView(endSpinner)
+            }
+
+            val spinnerContainer = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(24, 24, 24, 24)
+                setBackgroundColor(Color.argb(230, 255, 255, 255))
+                background = GradientDrawable().apply {
+                    cornerRadius = 24f
+                    setStroke(2, Color.LTGRAY)
+                    setColor(Color.argb(230, 255, 255, 255))
+                }
+
+                val params = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    setMargins(16, 0, 16, 0)
+                }
+                addView(startColumn, params)
+                addView(endColumn, params)
+            }
+
+            val containerParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                setMargins(20, 40, 20, 0)
+            }
+
+            frameLayout.addView(spinnerContainer, containerParams)
+
 
 
             val polygonVallon = createPolygonVallon()
@@ -232,13 +264,13 @@ fun MapPage() {
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             }
             val polyline = Polyline().apply {
-                title = "Itinéraire"
+                title = R.string.itinerary_title.toString()
                 outlinePaint.color = Color.BLUE
                 outlinePaint.strokeWidth = 6f
             }
 
             val polylineHandicape = Polyline().apply {
-                title = "Itinéraire Handicapé"
+                title = R.string.itinerary_handicape_title.toString()
                 outlinePaint.color = Color.RED
                 outlinePaint.strokeWidth = 6f
             }
@@ -302,22 +334,28 @@ fun MapPage() {
             }
 
 
-            fun updatePolygonsVisibility() {
-                mapView.overlays.removeAll(polygons.map { it.first } + polygons.map { it.second })
-                if (showPolygons.value) {
-                    polygons.forEach { (polygon, label) ->
-                        mapView.overlays.add(polygon)
-                        mapView.overlays.add(label)
-                    }
+//            fun updatePolygonsVisibility() {
+//                mapView.overlays.removeAll(polygons.map { it.first } + polygons.map { it.second })
+//                if (showPolygons.value) {
+//                    polygons.forEach { (polygon, label) ->
+//                        mapView.overlays.add(polygon)
+//                        mapView.overlays.add(label)
+//                    }
+//                }
+//                toggleButton.text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+//            }
+
+            fun setupPolygonsLayer() {
+                polygons.forEach { (polygon, label) ->
+                    mapView.overlays.add(0, polygon)  // Ajoute à l'index 0 pour qu'ils soient en-dessous
+                    mapView.overlays.add(1, label)    // Juste au-dessus du polygone
                 }
-                toggleButton.text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+                mapView.invalidate()
             }
 
 
             fun updateRouteVisibility() {
-
                 mapView.overlays.removeAll(listOf(startMarker, endMarker, polyline, polylineHandicape))
-
 
                 if (showRoute.value) {
                     mapView.overlays.add(startMarker)
@@ -327,9 +365,7 @@ fun MapPage() {
                     mapView.overlays.add(polyline)
                 }
 
-
                 toggleRouteButton.text = if (showRoute.value) "Masquer l'itinéraire" else "Afficher l'itinéraire"
-
 
                 startSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
                 endSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
@@ -338,23 +374,26 @@ fun MapPage() {
             }
 
 
-            toggleButton.setOnClickListener {
-                showPolygons.value = !showPolygons.value
-                updatePolygonsVisibility()
-            }
+
+//            toggleButton.setOnClickListener {
+//                showPolygons.value = !showPolygons.value
+//                updatePolygonsVisibility()
+//            }
 
             toggleRouteButton.setOnClickListener {
                 showRoute.value = !showRoute.value
                 updateRouteVisibility()
             }
 
-
+            setupPolygonsLayer()
             updatePath()
-            updatePolygonsVisibility()
+            //updatePolygonsVisibility()
             updateRouteVisibility()
 
             val mapEventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
-                override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean = false
+
+                override fun longPressHelper(p: GeoPoint?): Boolean {
                     if (showRoute.value) {
                         p?.let {
                             endPointState.value = it
@@ -366,7 +405,6 @@ fun MapPage() {
                     return true
                 }
 
-                override fun longPressHelper(p: GeoPoint?): Boolean = false
             })
 
             mapView.overlays.add(mapEventsOverlay)
