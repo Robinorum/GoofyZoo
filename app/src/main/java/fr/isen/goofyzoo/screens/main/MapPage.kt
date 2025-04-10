@@ -8,13 +8,23 @@ import androidx.compose.ui.Modifier
 import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Spinner
+import androidx.compose.runtime.LaunchedEffect
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.util.GeoPoint
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import fr.isen.goofyzoo.models.Biome
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Marker
@@ -26,21 +36,91 @@ import org.osmdroid.views.overlay.Polyline
 
 @Composable
 fun MapPage() {
-    val startPoint = GeoPoint(43.62380, 5.20964)
-    val endPointState = remember { mutableStateOf(GeoPoint(43.62250, 5.20700)) }
     val showPolygons = remember { mutableStateOf(true) }
+    val showRoute = remember { mutableStateOf(true) }
+    val database = FirebaseDatabase.getInstance().getReference("zoo")
+    val biomes = remember { mutableStateOf(emptyList<Biome>()) }
+    val startPoint = remember { mutableStateOf<GeoPoint?>(null) }
+    val endPointState = remember { mutableStateOf<GeoPoint?>(null) }
+
+
+    val startSpinnerRef = remember { mutableStateOf<Spinner?>(null) }
+    val endSpinnerRef = remember { mutableStateOf<Spinner?>(null) }
+    val enclosureListRef = remember { mutableStateOf(emptyList<Pair<String, GeoPoint>>()) }
+
+
+    LaunchedEffect(Unit) {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val biomeList = snapshot.children.mapNotNull { it.getValue(Biome::class.java) }
+                biomes.value = biomeList
+
+
+                val newEnclosureList = biomeList.flatMap { biome ->
+                    biome.enclosures.mapNotNull { enclosure ->
+                        enclosure.geopoint?.toOsmGeoPoint()?.let { geoPoint ->
+                            "${biome.name} - Enclos ${enclosure.id}" to geoPoint
+                        }
+                    }
+                }
+                enclosureListRef.value = newEnclosureList
+
+
+                if (biomeList.isNotEmpty() && startPoint.value == null) {
+                    biomeList[0].enclosures.firstOrNull()?.geopoint?.toOsmGeoPoint()?.let {
+                        startPoint.value = it
+                    }
+                }
+                if (biomeList.size > 1 && endPointState.value == null) {
+                    biomeList[1].enclosures.firstOrNull()?.geopoint?.toOsmGeoPoint()?.let {
+                        endPointState.value = it
+                    }
+                }
+
+
+                updateSpinners()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Erreur Firebase: ${error.message}")
+            }
+
+
+            private fun updateSpinners() {
+                val startSpinner = startSpinnerRef.value
+                val endSpinner = endSpinnerRef.value
+
+                if (startSpinner != null && endSpinner != null && enclosureListRef.value.isNotEmpty()) {
+                    val ctx = startSpinner.context
+                    val enclosureList = enclosureListRef.value
+
+                    val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item,
+                        enclosureList.map { it.first })
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                    startSpinner.adapter = adapter
+                    endSpinner.adapter = adapter
+
+                    // Sélection initiale
+                    if (enclosureList.isNotEmpty()) {
+                        startSpinner.setSelection(0)
+                        endSpinner.setSelection(if (enclosureList.size > 1) 1 else 0)
+                    }
+                }
+            }
+        })
+    }
 
     AndroidView(
         factory = { ctx ->
             Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-
             val frameLayout = FrameLayout(ctx)
             val mapView = MapView(ctx)
 
             mapView.setTileSource(TileSourceFactory.MAPNIK)
             mapView.setMultiTouchControls(true)
             mapView.controller.setZoom(17.0)
-            mapView.controller.setCenter(startPoint)
+            startPoint.value?.let { mapView.controller.setCenter(it) }
 
             val limitBox = BoundingBox(43.63380, 5.21964, 43.61380, 5.19964)
             mapView.setScrollableAreaLimitDouble(limitBox)
@@ -50,27 +130,66 @@ fun MapPage() {
 
             val toggleButton = Button(ctx).apply {
                 text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
-                setBackgroundColor(
-                    Color.argb(
-                        180,
-                        0,
-                        0,
-                        0
-                    )
-                )
+                setBackgroundColor(Color.argb(180, 0, 0, 0))
                 setTextColor(Color.WHITE)
                 textSize = 12f
             }
-
             val buttonParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(20, 0, 20, 180)
+            }
+            frameLayout.addView(toggleButton, buttonParams)
+
+
+            val toggleRouteButton = Button(ctx).apply {
+                text = if (showRoute.value) "Masquer l'itinéraire" else "Afficher l'itinéraire"
+                setBackgroundColor(Color.argb(180, 0, 0, 0))
+                setTextColor(Color.WHITE)
+                textSize = 12f
+            }
+            val routeButtonParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
-            ).apply{
-                gravity=Gravity.TOP or Gravity.END
-                setMargins(20,60,20,0)
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(20, 0, 20, 20)
+            }
+            frameLayout.addView(toggleRouteButton, routeButtonParams)
+
+
+            val startSpinner = Spinner(ctx).apply {
+                setBackgroundColor(Color.argb(180, 255, 255, 255))
+                minimumWidth = 300
+            }
+            val endSpinner = Spinner(ctx).apply {
+                setBackgroundColor(Color.argb(180, 255, 255, 255))
+                minimumWidth = 300
             }
 
-            frameLayout.addView(toggleButton, buttonParams)
+
+            startSpinnerRef.value = startSpinner
+            endSpinnerRef.value = endSpinner
+
+            val startParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                setMargins(20, 20, 20, 0)
+            }
+            val endParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                setMargins(20, 80, 20, 0)
+            }
+
+            frameLayout.addView(startSpinner, startParams)
+            frameLayout.addView(endSpinner, endParams)
 
 
             val polygonVallon = createPolygonVallon()
@@ -95,38 +214,93 @@ fun MapPage() {
                 polygonBergerie to labelBergerie
             )
 
+
             val graph = ZooGraph(ctx)
             graph.loadGeoJsonFromAssets("ways.geojson")
 
+            val graphHandicape = ZooGraph(ctx)
+            graphHandicape.loadGeoJsonFromAssets("ways_without_stairs.geojson")
+
             val startMarker = Marker(mapView).apply {
-                position = startPoint
+                startPoint.value?.let { position = it }
                 title = "Départ"
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             }
-
-
             val endMarker = Marker(mapView).apply {
-                position = endPointState.value
+                endPointState.value?.let { position = it }
                 title = "Arrivée"
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             }
-
-
             val polyline = Polyline().apply {
                 title = "Itinéraire"
                 outlinePaint.color = Color.BLUE
                 outlinePaint.strokeWidth = 6f
             }
 
-
-            fun updatePath(newEnd: GeoPoint) {
-                val start = Node(startPoint.longitude, startPoint.latitude)
-                val end = Node(newEnd.longitude, newEnd.latitude)
-                val path = graph.shortestPath(start, end)
-                polyline.setPoints(path.map { GeoPoint(it.lat, it.lon) })
-                endMarker.position = newEnd
-                mapView.invalidate()
+            val polylineHandicape = Polyline().apply {
+                title = "Itinéraire Handicapé"
+                outlinePaint.color = Color.RED
+                outlinePaint.strokeWidth = 6f
             }
+
+
+            fun updatePath() {
+                startPoint.value?.let { start ->
+                    endPointState.value?.let { end ->
+                        val startNode = Node(start.longitude, start.latitude)
+                        val endNode = Node(end.longitude, end.latitude)
+                        val path = graph.shortestPath(startNode, endNode)
+                        val pathHandicape = graphHandicape.shortestPath(startNode, endNode)
+                        polyline.setPoints(path.map { GeoPoint(it.lat, it.lon) })
+                        polylineHandicape.setPoints(pathHandicape.map { GeoPoint(it.lat, it.lon) })
+                        mapView.invalidate()
+                    }
+                }
+            }
+
+
+            if (enclosureListRef.value.isNotEmpty()) {
+                val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item,
+                    enclosureListRef.value.map { it.first })
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                startSpinner.adapter = adapter
+                endSpinner.adapter = adapter
+
+                if (enclosureListRef.value.isNotEmpty()) {
+                    startSpinner.setSelection(0)
+                    endSpinner.setSelection(if (enclosureListRef.value.size > 1) 1 else 0)
+                }
+            }
+
+
+            startSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    val enclosureList = enclosureListRef.value
+                    if (position >= 0 && position < enclosureList.size) {
+                        startPoint.value = enclosureList[position].second
+                        startMarker.position = startPoint.value
+                        updatePath()
+                        mapView.invalidate()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            endSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    val enclosureList = enclosureListRef.value
+                    if (position >= 0 && position < enclosureList.size) {
+                        endPointState.value = enclosureList[position].second
+                        endMarker.position = endPointState.value
+                        updatePath()
+                        mapView.invalidate()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
 
             fun updatePolygonsVisibility() {
                 mapView.overlays.removeAll(polygons.map { it.first } + polygons.map { it.second })
@@ -136,28 +310,58 @@ fun MapPage() {
                         mapView.overlays.add(label)
                     }
                 }
-                mapView.overlays.removeAll(listOf(startMarker,endMarker,polyline))
-                mapView.overlays.add(startMarker)
-                mapView.overlays.add(endMarker)
-                mapView.overlays.add(polyline)
-
                 toggleButton.text = if (showPolygons.value) "Masquer les biômes" else "Afficher les biômes"
+            }
+
+
+            fun updateRouteVisibility() {
+
+                mapView.overlays.removeAll(listOf(startMarker, endMarker, polyline, polylineHandicape))
+
+
+                if (showRoute.value) {
+                    mapView.overlays.add(startMarker)
+                    mapView.overlays.add(endMarker)
+
+                    mapView.overlays.add(polylineHandicape)
+                    mapView.overlays.add(polyline)
+                }
+
+
+                toggleRouteButton.text = if (showRoute.value) "Masquer l'itinéraire" else "Afficher l'itinéraire"
+
+
+                startSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
+                endSpinner.visibility = if (showRoute.value) View.VISIBLE else View.GONE
+
                 mapView.invalidate()
             }
+
 
             toggleButton.setOnClickListener {
                 showPolygons.value = !showPolygons.value
                 updatePolygonsVisibility()
             }
 
-            updatePath(endPointState.value)
+            toggleRouteButton.setOnClickListener {
+                showRoute.value = !showRoute.value
+                updateRouteVisibility()
+            }
+
+
+            updatePath()
             updatePolygonsVisibility()
+            updateRouteVisibility()
 
             val mapEventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
                 override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                    p?.let {
-                        endPointState.value = it
-                        updatePath(it)
+                    if (showRoute.value) {
+                        p?.let {
+                            endPointState.value = it
+                            endMarker.position = it
+                            updatePath()
+                            mapView.invalidate()
+                        }
                     }
                     return true
                 }
@@ -169,10 +373,9 @@ fun MapPage() {
 
             frameLayout
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
     )
 }
-
 
 
 private fun createPolygonVallon(): Polygon {
