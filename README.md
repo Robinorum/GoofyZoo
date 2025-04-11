@@ -74,5 +74,15 @@ BarbenApp est une application mobile immersive permettant aux visiteurs de navig
 
 ---
 
+## 👨‍💻 Équipe de Développement
+
+Cette application a été conçue et développée par :
+
+- **Robin METAIS**
+- **Lucas GUMUCHIAN**
+- **Luigi GIUSIANO**
+
+---
+
 ## 📜 Licence
 Projet développé dans le cadre d’un projet universitaire — tous droits réservés.
