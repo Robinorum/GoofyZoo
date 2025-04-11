@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,7 +20,6 @@ import androidx.navigation.NavHostController
 import com.google.firebase.database.*
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
-
 
 @Composable
 fun EnclosuresListScreen(navController: NavHostController) {
@@ -110,15 +110,47 @@ fun EnclosuresListScreen(navController: NavHostController) {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = "Enclos n°${enclosure.id}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                                    Column {
+                                        Text(
+                                            text = "Enclos n°${enclosure.id}",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+
+                                        enclosure.animals.forEach { animal ->
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(bottom = 4.dp)
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.pet),
+                                                    contentDescription = "Animal icon",
+                                                    modifier = Modifier
+                                                        .size(20.dp)
+                                                        .padding(end = 4.dp)
+                                                )
+                                                Text(
+                                                    text = animal.name,
+                                                    style = MaterialTheme.typography.bodyMedium
+                                                )
+                                            }
+                                        }
+                                        if (enclosure.animals.isEmpty()) {
+                                            Text(
+                                                text = "Aucun animal",
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                        }
+                                    }
+
                                     Text(
                                         text = if (enclosure.is_open) "Ouvert" else "Fermé",
-                                        style = MaterialTheme.typography.bodySmall.copy(color = if (enclosure.is_open) Color.Green else Color.Red)
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            color = if (enclosure.is_open) Color.Green else Color.Red
+                                        )
                                     )
                                 }
                             }
@@ -129,5 +161,3 @@ fun EnclosuresListScreen(navController: NavHostController) {
         }
     }
 }
-
-
