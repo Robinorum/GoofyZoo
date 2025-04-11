@@ -17,7 +17,7 @@ class EmployeeActivity : ComponentActivity() {
             val navController = rememberNavController()
             NavHost(navController, startDestination = "employee_dashboard_screen") {
                 composable("employee_dashboard_screen") { EmployeeDashboardScreen(navController) }
-                composable("all_schedule") { AllSchedule() }
+                composable("all_schedule") { AllSchedule(navController) }
             }
         }
     }

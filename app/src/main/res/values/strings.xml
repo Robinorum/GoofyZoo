@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoofyZoo</string>
+    <string name="app_name">Barben App</string>
 
 <!-- Auth -->
     <!--login -->
@@ -88,6 +88,7 @@
     <string name="navbar_champ2">Carte</string>
     <string name="navbar_champ3">Enclos</string>
     <string name="navbar_champ4">Services</string>
-
+    <string name="back_desc">back</string>
+    <string name="logout_desc">logout</string>
 
 </resources>

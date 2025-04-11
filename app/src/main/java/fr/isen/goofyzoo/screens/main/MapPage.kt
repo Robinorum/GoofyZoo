@@ -222,6 +222,69 @@ fun MapPage() {
 
 
 
+            val legendContainer = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(16, 16, 16, 16)
+                setBackgroundColor(Color.argb(230, 255, 255, 255))
+                background = GradientDrawable().apply {
+                    cornerRadius = 12f
+                    setStroke(2, Color.LTGRAY)
+                }
+            }
+
+
+            val optimalPathRow = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val optimalPathLine = View(ctx).apply {
+                setBackgroundColor(Color.BLUE)
+                layoutParams = LinearLayout.LayoutParams(40, 6)
+            }
+            val optimalPathLabel = TextView(ctx).apply {
+                text = "Chemin optimal"
+                setTextColor(Color.BLACK)
+                textSize = 12f
+                setPadding(8, 0, 0, 0)
+            }
+            optimalPathRow.addView(optimalPathLine)
+            optimalPathRow.addView(optimalPathLabel)
+
+
+            val handicapPathRow = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val handicapPathLine = View(ctx).apply {
+                setBackgroundColor(Color.RED)
+                layoutParams = LinearLayout.LayoutParams(40, 6)
+            }
+            val handicapPathLabel = TextView(ctx).apply {
+                text = "Chemin sans escalier"
+                setTextColor(Color.BLACK)
+                textSize = 12f
+                setPadding(8, 0, 0, 0)
+            }
+            handicapPathRow.addView(handicapPathLine)
+            handicapPathRow.addView(handicapPathLabel)
+
+
+            legendContainer.addView(optimalPathRow)
+            legendContainer.addView(handicapPathRow)
+
+
+            val legendParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.BOTTOM or Gravity.START
+                setMargins(20, 0, 0, 20)
+            }
+
+            frameLayout.addView(legendContainer, legendParams)
+
+
+
             val polygonVallon = createPolygonVallon()
             val labelVallon = createLabelVallon(mapView)
             val polygonBelvedere = createPolygonBelvedere()

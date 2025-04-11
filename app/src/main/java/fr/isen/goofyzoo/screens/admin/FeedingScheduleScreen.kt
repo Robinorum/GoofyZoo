@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.database.*
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
@@ -28,7 +29,7 @@ import fr.isen.goofyzoo.models.Enclosure
 import java.util.*
 
 @Composable
-fun FeedingScheduleScreen() {
+fun FeedingScheduleScreen(navController: NavController) {
     val database = FirebaseDatabase.getInstance().getReference("zoo")
     var biomes by remember { mutableStateOf<List<Biome>>(emptyList()) }
     var expandedBiomeId by remember { mutableStateOf<String?>(null) }
@@ -48,13 +49,33 @@ fun FeedingScheduleScreen() {
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = stringResource(R.string.back_desc),
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
+
         Text(
             text = stringResource(R.string.admin_button2),
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
             modifier = Modifier
-                .padding(bottom = 16.dp)
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
+                .padding(bottom = 16.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -160,8 +181,6 @@ fun FeedingItem(enclosure: Enclosure, onTimePicked: (String) -> Unit, context: C
                 )
             }
 
-
-
             Icon(
                 painter = painterResource(id = R.drawable.clock),
                 contentDescription = stringResource(R.string.admin_define_hour),
@@ -183,7 +202,6 @@ fun FeedingItem(enclosure: Enclosure, onTimePicked: (String) -> Unit, context: C
                     },
                 tint = Color.Gray
             )
-
         }
     }
 }

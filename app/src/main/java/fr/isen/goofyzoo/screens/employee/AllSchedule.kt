@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -18,13 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.database.*
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Biome
 import fr.isen.goofyzoo.models.Enclosure
 
 @Composable
-fun AllSchedule() {
+fun AllSchedule(navController: NavController) {
     val database = FirebaseDatabase.getInstance().getReference("zoo")
     var biomes by remember { mutableStateOf<List<Biome>>(emptyList()) }
     var expandedBiomeId by remember { mutableStateOf<String?>(null) }
@@ -44,13 +46,33 @@ fun AllSchedule() {
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = stringResource(R.string.back_desc),
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
+
         Text(
             text = stringResource(R.string.feeding_hour),
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp),
             modifier = Modifier
-                .padding(bottom = 16.dp)
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
+                .padding(bottom = 16.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -147,7 +169,6 @@ fun FeedingItem(enclosure: Enclosure) {
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
                 )
             }
-
         }
     }
 }

@@ -17,8 +17,8 @@ class AdminActivity : ComponentActivity() {
             val navController = rememberNavController()
             NavHost(navController, startDestination = "admin_dashboard_screen") {
                 composable("admin_dashboard_screen") { AdminDashboardScreen(navController) }
-                composable("maintenance_screen") { MaintenanceScreen() }
-                composable("feeding_schedule_screen") { FeedingScheduleScreen() }
+                composable("maintenance_screen") { MaintenanceScreen(navController) }
+                composable("feeding_schedule_screen") { FeedingScheduleScreen(navController) }
             }
         }
     }

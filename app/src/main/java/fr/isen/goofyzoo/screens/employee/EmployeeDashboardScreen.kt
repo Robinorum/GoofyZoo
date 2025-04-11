@@ -1,5 +1,6 @@
 package fr.isen.goofyzoo.screens.employee
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.database.*
+import fr.isen.goofyzoo.AuthActivity
 import fr.isen.goofyzoo.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,6 +30,7 @@ import java.util.concurrent.TimeUnit
 fun EmployeeDashboardScreen(navController: NavController) {
     val database = FirebaseDatabase.getInstance().getReference("zoo")
     var enclosuresToFeed by remember { mutableStateOf<List<Triple<String, String, String>>>(emptyList()) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         database.addValueEventListener(object : ValueEventListener {
@@ -62,7 +66,6 @@ fun EmployeeDashboardScreen(navController: NavController) {
                     }
                 }
 
-
                 upcomingList.sortBy { (_, _, meal) ->
                     val cal = Calendar.getInstance().apply {
                         time = sdf.parse(meal)!!
@@ -89,11 +92,40 @@ fun EmployeeDashboardScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo du Zoo",
-            modifier = Modifier.size(120.dp)
-        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo du Zoo",
+                modifier = Modifier
+                    .size(120.dp)
+                    .weight(1f, fill = false)
+            )
+
+
+            IconButton(
+                onClick = {
+
+                    val intent = Intent(context, AuthActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.logout),
+                    contentDescription = stringResource(R.string.logout_desc),
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
+
 
         Text(
             text = stringResource(R.string.employee_welcome),
@@ -101,6 +133,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
+
 
         LazyColumn(
             modifier = Modifier
@@ -127,6 +160,7 @@ fun EmployeeDashboardScreen(navController: NavController) {
                 }
             }
         }
+
 
         Button(
             onClick = { navController.navigate("all_schedule") },
