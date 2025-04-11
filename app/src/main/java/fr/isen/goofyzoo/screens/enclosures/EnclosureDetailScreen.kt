@@ -336,40 +336,50 @@ fun EnclosureDetailScreen(navController: NavHostController, user:User) {
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-
-            reviews.filter { it.userId != user.id }.forEach { review ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Utilisateur: ${review.username}",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                            color = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            for (i in 1..5) {
-                                Icon(
-                                    imageVector = Icons.Filled.Star,
-                                    contentDescription = "$i étoiles",
-                                    tint = if (i <= review.rating) Color.Yellow else Color.Gray
-                                )
+            if (reviews.isEmpty())
+            {
+                Text(
+                    text = "Aucun commentaire pour l'enclos",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+                )
+            }
+            else
+            {
+                reviews.filter { it.userId != user.id }.forEach { review ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Utilisateur: ${review.username}",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                                color = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                for (i in 1..5) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = "$i étoiles",
+                                        tint = if (i <= review.rating) Color.Yellow else Color.Gray
+                                    )
+                                }
                             }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = review.comment,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                            )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = review.comment,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
-                        )
                     }
                 }
             }
+
         } ?: Text(
             text = "Chargement...",
             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
