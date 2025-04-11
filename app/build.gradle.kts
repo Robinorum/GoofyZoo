@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
+    id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
 }
 
 android {
@@ -47,11 +50,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    composeCompiler {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
+    implementation(libs.osmdroid.android)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -59,6 +65,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.osmdroid.android)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +77,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.datetime)
+
 }
