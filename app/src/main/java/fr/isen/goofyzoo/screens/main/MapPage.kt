@@ -97,21 +97,20 @@ fun MapPage() {
                 val endSpinner = endSpinnerRef.value
 
                 if (startSpinner != null && endSpinner != null && enclosureListRef.value.isNotEmpty()) {
-                    val ctx = startSpinner.context
-                    val enclosureList = enclosureListRef.value
 
-                    val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item,
-                        enclosureList.map { it.first })
+                    val defaultLabel = "Sélectionnez un enclos"
+                    val enclosureList = enclosureListRef.value
+                    val spinnerItems = listOf(defaultLabel) + enclosureList.map { it.first }
+
+                    val ctx = startSpinner.context
+                    val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item, spinnerItems)
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
                     startSpinner.adapter = adapter
                     endSpinner.adapter = adapter
 
-                    // Sélection initiale
-                    if (enclosureList.isNotEmpty()) {
-                        startSpinner.setSelection(0)
-                        endSpinner.setSelection(if (enclosureList.size > 1) 1 else 0)
-                    }
+                    startSpinner.setSelection(0, false)
+                    endSpinner.setSelection(0, false)
                 }
             }
         })
@@ -290,25 +289,31 @@ fun MapPage() {
             }
 
 
-            if (enclosureListRef.value.isNotEmpty()) {
-                val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item,
-                    enclosureListRef.value.map { it.first })
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                startSpinner.adapter = adapter
-                endSpinner.adapter = adapter
 
-                if (enclosureListRef.value.isNotEmpty()) {
-                    startSpinner.setSelection(0)
-                    endSpinner.setSelection(if (enclosureListRef.value.size > 1) 1 else 0)
-                }
-            }
+            val defaultLabel = "Sélectionnez un enclos"
+            val enclosureList = enclosureListRef.value
+            val spinnerItems = listOf(defaultLabel) + enclosureList.map { it.first }
+
+            val ctx = startSpinner.context
+            val adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_item, spinnerItems)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            startSpinner.adapter = adapter
+            endSpinner.adapter = adapter
+
+            startSpinner.setSelection(0, false)
+            endSpinner.setSelection(0, false)
 
 
             startSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                     val enclosureList = enclosureListRef.value
-                    if (position >= 0 && position < enclosureList.size) {
-                        startPoint.value = enclosureList[position].second
+                    if (position == 0) {
+                        startPoint.value = null
+                        return
+                    }
+                    if (position > 0 && position < enclosureList.size) {
+                        startPoint.value = enclosureList[position - 1].second
                         startMarker.position = startPoint.value
                         updatePath()
                         mapView.invalidate()
@@ -321,8 +326,12 @@ fun MapPage() {
             endSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                     val enclosureList = enclosureListRef.value
-                    if (position >= 0 && position < enclosureList.size) {
-                        endPointState.value = enclosureList[position].second
+                    if (position == 0) {
+                        endPointState.value = null
+                        return
+                    }
+                    if (position > 0 && position < enclosureList.size) {
+                        endPointState.value = enclosureList[position - 1].second
                         endMarker.position = endPointState.value
                         updatePath()
                         mapView.invalidate()

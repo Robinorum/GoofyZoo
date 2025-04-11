@@ -57,7 +57,7 @@
     <string name="profile_champ1">Vos avis</string>
     <string name="profile_no_comment">Aucun avis trouvé.</string>
     <string name="profile_button1">Modifier le profil</string>
-    <string name="profile_placeholder">Entrez le nouveau nom d utilisateur</string>
+    <string name="profile_placeholder">Entrez le nouveau nom d\'utilisateur</string>
     <string name="profile_annuler">Annuler</string>
     <string name="profile_valider">Valider</string>
     <string name="profile_button2">Se déconnecter</string>

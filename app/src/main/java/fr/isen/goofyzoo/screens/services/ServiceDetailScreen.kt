@@ -90,13 +90,5 @@ fun ServiceItem(service: Service) {
                 )
             }
         }
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "ID Service: ${service.id_service}",
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
     }
 }
