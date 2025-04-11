@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import fr.isen.goofyzoo.R
+import fr.isen.goofyzoo.models.User
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -108,11 +109,12 @@ fun RegisterScreen(navController: NavController) {
                             val user = auth.currentUser
                             val userId = user?.uid ?: return@addOnCompleteListener
 
-                            val userData = mapOf(
-                                "id" to userId,
-                                "username" to username,
-                                "email" to email,
-                                "admin" to false
+                            val userData =  User(
+                                id = userId,
+                                username = username,
+                                email = email,
+                                admin = false,
+                                employee = false
                             )
 
                             database.child("users").child(userId).setValue(userData)

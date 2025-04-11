@@ -1,3 +1,11 @@
 package fr.isen.goofyzoo.models
 
-data class User(val id: String = "", val username: String = "", val email: String = "")
+import java.io.Serializable
+
+data class User(
+    val id: String = "",
+    val username: String = "",
+    val email: String = "",
+    val admin: Boolean = false,
+    val employee: Boolean= false
+) : Serializable

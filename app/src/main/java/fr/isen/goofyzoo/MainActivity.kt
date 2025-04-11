@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import fr.isen.goofyzoo.models.User
 import fr.isen.goofyzoo.navigation.BottomNavBar
 import fr.isen.goofyzoo.navigation.NavigationGraph
 import fr.isen.goofyzoo.ui.theme.GoofyZooTheme
@@ -17,8 +18,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val userId = intent.getStringExtra("UserId") ?: "unknown"
-        val username = intent.getStringExtra("Username") ?: "unknown"
+
+        val user = intent.getSerializableExtra("User") as? User ?: User()
+
         setContent {
             GoofyZooTheme {
                 val navController = rememberNavController()
@@ -26,7 +28,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = { BottomNavBar(navController) }
                 ) { innerPadding ->
-                    NavigationGraph(navController, Modifier.padding(innerPadding), userId, username)
+                    NavigationGraph(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding),
+                        user = user
+                    )
                 }
             }
         }

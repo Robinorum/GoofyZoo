@@ -22,6 +22,7 @@ import fr.isen.goofyzoo.MainActivity
 import fr.isen.goofyzoo.AdminActivity
 import fr.isen.goofyzoo.EmployeeActivity
 import fr.isen.goofyzoo.R
+import fr.isen.goofyzoo.models.User
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -90,23 +91,26 @@ fun LoginScreen(navController: NavController) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val user = auth.currentUser
-                            val userId = user?.uid ?: return@addOnCompleteListener
+                            val firebaseUser = auth.currentUser
+                            val userId = firebaseUser?.uid ?: return@addOnCompleteListener
 
                             database.child("users").child(userId).get()
                                 .addOnSuccessListener { snapshot ->
-                                    val isAdmin = snapshot.child("admin").getValue(Boolean::class.java) ?: false
-                                    val isEmployee = snapshot.child("employee").getValue(Boolean::class.java) ?: false
-                                    val username = snapshot.child("username").getValue(String::class.java) ?: ""
+                                    val user = User(
+                                        id = userId,
+                                        username = snapshot.child("username").getValue(String::class.java) ?: "",
+                                        email = snapshot.child("email").getValue(String::class.java) ?: "",
+                                        admin = snapshot.child("admin").getValue(Boolean::class.java) ?: false,
+                                        employee = snapshot.child("employee").getValue(Boolean::class.java) ?: false
+                                    )
 
                                     val intent = when {
-                                        isAdmin -> Intent(navController.context, AdminActivity::class.java)
-                                        isEmployee -> Intent(navController.context, EmployeeActivity::class.java)
+                                        user.admin -> Intent(navController.context, AdminActivity::class.java)
+                                        user.employee -> Intent(navController.context, EmployeeActivity::class.java)
                                         else -> Intent(navController.context, MainActivity::class.java)
                                     }
 
-                                    intent.putExtra("UserId", userId)
-                                    intent.putExtra("Username", username)
+                                    intent.putExtra("User", user)
                                     navController.context.startActivity(intent)
                                 }
                         } else {
