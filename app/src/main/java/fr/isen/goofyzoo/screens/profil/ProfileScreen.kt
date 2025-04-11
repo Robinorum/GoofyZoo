@@ -82,10 +82,10 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = 8.dp),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(4.dp),
-                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.LightBrown))
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(

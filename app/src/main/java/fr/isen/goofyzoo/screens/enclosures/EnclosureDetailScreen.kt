@@ -98,7 +98,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 )
             }
 
-
             it.animals.forEach { animal ->
                 Card(
                     modifier = Modifier
@@ -117,9 +116,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 }
             }
 
-
             Spacer(modifier = Modifier.height(16.dp))
-
 
             enclosure.geopoint?.let { geoPoint ->
                 Card(
@@ -129,42 +126,40 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
+                    AndroidView(
+                        factory = { ctx ->
+                            Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
+                            val mapView = MapView(ctx).apply {
+                                setTileSource(TileSourceFactory.MAPNIK)
+                                setMultiTouchControls(true)
+                                isHorizontalMapRepetitionEnabled = false
+                                isVerticalMapRepetitionEnabled = false
+                                setScrollableAreaLimitLatitude(43.63380, 43.61380, 0)
+                                setScrollableAreaLimitLongitude(5.19964, 5.21964, 0)
+                                controller.setZoom(17.0)
+                                controller.setCenter(geoPoint.toOsmGeoPoint())
+                                isClickable = false
+                                zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+                            }
 
-                AndroidView(
-                    factory = { ctx ->
-                        Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-                        val mapView = MapView(ctx).apply {
-                            setTileSource(TileSourceFactory.MAPNIK)
-                            setMultiTouchControls(true)
-                            isHorizontalMapRepetitionEnabled = false
-                            isVerticalMapRepetitionEnabled = false
-                            setScrollableAreaLimitLatitude(43.63380, 43.61380, 0)
-                            setScrollableAreaLimitLongitude(5.19964, 5.21964, 0)
-                            controller.setZoom(17.0)
-                            controller.setCenter(geoPoint.toOsmGeoPoint())
-                            isClickable = false
-                            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-                        }
+                            val marker = Marker(mapView).apply {
+                                position = geoPoint.toOsmGeoPoint()
+                                title = "Enclos n°${enclosure.id}"
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            }
+                            mapView.overlays.add(marker)
 
-                        val marker = Marker(mapView).apply {
-                            position = geoPoint.toOsmGeoPoint()
-                            title = "Enclos n°${enclosure.id}"
-                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                        }
-                        mapView.overlays.add(marker)
-
-                        mapView
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .padding(4.dp)
-                )
-            }}
-
+                            mapView
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
+                            .padding(4.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
-
 
             Text(
                 text = stringResource(R.string.encloD_champ1),
@@ -188,14 +183,66 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     }
                 }
 
-                OutlinedTextField(
-                    value = reviewText,
-                    onValueChange = { reviewText = it },
-                    label = { Text(stringResource(R.string.encloD_placeholder)) },
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = reviewText,
+                        onValueChange = { reviewText = it },
+                        label = { Text(stringResource(R.string.encloD_placeholder)) },
+                        modifier = Modifier
+                            .weight(1f) // Raccourcit le champ pour laisser de l'espace
+                            .padding(end = 8.dp) // Espacement entre le champ et l'icône
+                    )
+                    IconButton(
+                        onClick = {
+                            if (rating > 0 && reviewText.isNotBlank()) {
+                                val newReview = Review(
+                                    id = reviews.size + 1,
+                                    enclosureId = it.id,
+                                    userId = userId,
+                                    username = username,
+                                    rating = rating,
+                                    comment = reviewText
+                                )
+
+                                database.child("users").child(userId).child("reviews").push().setValue(newReview)
+
+                                database.child("zoo").get().addOnSuccessListener { snapshot ->
+                                    for (biomeSnapshot in snapshot.children) {
+                                        val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
+                                        if (biomeId == it.id_biomes) {
+                                            for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
+                                                val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
+                                                if (enclosureId == it.id) {
+                                                    enclosureSnapshot.ref.child("reviews").push().setValue(newReview)
+                                                    return@addOnSuccessListener
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                reviews = reviews + newReview
+                                rating = 0
+                                reviewText = ""
+                            } else {
+                                errorMessage = "Veuillez sélectionner au moins une étoile et mettre un commentaire."
+                            }
+                        },
+                        modifier = Modifier.size(48.dp) // Taille de la zone cliquable
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.send),
+                            contentDescription = stringResource(R.string.encloD_button),
+
+                        )
+                    }
+                }
+
                 if (errorMessage.isNotBlank()) {
                     Text(
                         text = errorMessage,
@@ -203,49 +250,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                }
-
-                Button(
-                    onClick = {
-                        if (rating > 0 && reviewText.isNotBlank()) {
-                            val newReview = Review(
-                                id = reviews.size + 1,
-                                enclosureId = it.id,
-                                userId = userId,
-                                username = username,
-                                rating = rating,
-                                comment = reviewText
-                            )
-
-                            database.child("users").child(userId).child("reviews").push().setValue(newReview)
-
-                            database.child("zoo").get().addOnSuccessListener { snapshot ->
-                                for (biomeSnapshot in snapshot.children) {
-                                    val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
-                                    if (biomeId == it.id_biomes) {
-                                        for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
-                                            val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
-                                            if (enclosureId == it.id) {
-                                                enclosureSnapshot.ref.child("reviews").push().setValue(newReview)
-                                                return@addOnSuccessListener
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            reviews = reviews + newReview
-                            rating = 0
-                            reviewText = ""
-                        } else {
-                            errorMessage = "Veuillez sélectionner au moins une étoile et mettre un commentaire."
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text(text = stringResource(R.string.encloD_button))
                 }
             } else {
                 val userReview = reviews.firstOrNull { it.userId == userId }
@@ -259,7 +263,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
                     ) {
                         Box(modifier = Modifier.fillMaxWidth()) {
-
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     for (i in 1..5) {
@@ -276,7 +279,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                                 )
                             }
-
 
                             IconButton(
                                 onClick = {
@@ -314,7 +316,6 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
                                     .padding(8.dp)
-
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.bin),
