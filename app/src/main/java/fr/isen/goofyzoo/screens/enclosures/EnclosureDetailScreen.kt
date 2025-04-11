@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -257,67 +258,69 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                         elevation = CardDefaults.cardElevation(4.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                for (i in 1..5) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Star,
-                                        contentDescription = "$i étoiles",
-                                        tint = if (i <= userReview.rating) Color.Yellow else Color.Gray
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = userReview.comment,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Box(modifier = Modifier.fillMaxWidth()) {
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround
-                            ) {
-                                Button(
-                                    onClick = {
-                                        userReview.let { review ->
-                                            database.child("zoo").get().addOnSuccessListener { snapshot ->
-                                                for (biomeSnapshot in snapshot.children) {
-                                                    val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
-                                                    if (biomeId == enclosure.id_biomes) {
-                                                        for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
-                                                            val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
-                                                            if (enclosureId == enclosure.id) {
-                                                                val reviewRef = enclosureSnapshot.child("reviews").children.firstOrNull {
-                                                                    it.getValue<Review>()?.id == review.id
-                                                                }?.ref
-                                                                reviewRef?.removeValue()
-                                                            }
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    for (i in 1..5) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Star,
+                                            contentDescription = "$i étoiles",
+                                            tint = if (i <= userReview.rating) Color.Yellow else Color.Gray
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = userReview.comment,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                                )
+                            }
+
+
+                            IconButton(
+                                onClick = {
+                                    userReview.let { review ->
+                                        database.child("zoo").get().addOnSuccessListener { snapshot ->
+                                            for (biomeSnapshot in snapshot.children) {
+                                                val biomeId = biomeSnapshot.child("id").getValue(String::class.java)
+                                                if (biomeId == enclosure.id_biomes) {
+                                                    for (enclosureSnapshot in biomeSnapshot.child("enclosures").children) {
+                                                        val enclosureId = enclosureSnapshot.child("id").getValue(String::class.java)
+                                                        if (enclosureId == enclosure.id) {
+                                                            val reviewRef = enclosureSnapshot.child("reviews").children.firstOrNull {
+                                                                it.getValue<Review>()?.id == review.id
+                                                            }?.ref
+                                                            reviewRef?.removeValue()
                                                         }
                                                     }
                                                 }
-                                            }.addOnFailureListener { error ->
-                                                println("Erreur lors de la suppression dans l'enclos: ${error.message}")
                                             }
-
-                                            database.child("users").child(userId).child("reviews").get().addOnSuccessListener { userSnapshot ->
-                                                userSnapshot.children.firstOrNull {
-                                                    it.getValue<Review>()?.id == review.id
-                                                }?.ref?.removeValue()?.addOnSuccessListener {
-                                                    reviews = reviews.filter { it.id != review.id }
-                                                }
-                                            }.addOnFailureListener { error ->
-                                                println("Erreur lors de la suppression dans la collection utilisateur: ${error.message}")
-                                            }
+                                        }.addOnFailureListener { error ->
+                                            println("Erreur lors de la suppression dans l'enclos: ${error.message}")
                                         }
-                                    },
-                                    modifier = Modifier.width(100.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.encloD_button2),
-                                        color = Color.Red
-                                    )
-                                }
+
+                                        database.child("users").child(userId).child("reviews").get().addOnSuccessListener { userSnapshot ->
+                                            userSnapshot.children.firstOrNull {
+                                                it.getValue<Review>()?.id == review.id
+                                            }?.ref?.removeValue()?.addOnSuccessListener {
+                                                reviews = reviews.filter { it.id != review.id }
+                                            }
+                                        }.addOnFailureListener { error ->
+                                            println("Erreur lors de la suppression dans la collection utilisateur: ${error.message}")
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(8.dp)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.bin),
+                                    contentDescription = stringResource(R.string.encloD_button2),
+                                    modifier = Modifier.fillMaxSize()
+                                )
                             }
                         }
                     }
