@@ -114,7 +114,8 @@ fun RegisterScreen(navController: NavController) {
                                 username = username,
                                 email = email,
                                 admin = false,
-                                employee = false
+                                employee = false ,
+                                reviews = emptyList()
                             )
 
                             database.child("users").child(userId).setValue(userData)

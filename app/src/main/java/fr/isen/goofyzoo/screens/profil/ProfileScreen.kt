@@ -18,15 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import fr.isen.goofyzoo.AuthActivity
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Review
+import fr.isen.goofyzoo.models.User
 
 @Composable
-fun ProfileScreen(navController: NavHostController, UserId: String) {
+fun ProfileScreen(user:User) {
     var usernameState by remember { mutableStateOf("") }
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     var showEditField by remember { mutableStateOf(false) }
@@ -35,28 +35,25 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
     val database = FirebaseDatabase.getInstance().reference
     val context = LocalContext.current
 
-    LaunchedEffect(UserId) {
-        // Récupérer le nom d'utilisateur
-        database.child("users").child(UserId).child("username").get().addOnSuccessListener { snapshot ->
+    LaunchedEffect(user.id) {
+        database.child("users").child(user.id).child("username").get().addOnSuccessListener { snapshot ->
             snapshot.getValue(String::class.java)?.let {
                 usernameState = it
             }
         }
 
-        // Récupérer les avis
-        database.child("users").child(UserId).child("reviews").get().addOnSuccessListener { snapshot ->
+        database.child("users").child(user.id).child("reviews").get().addOnSuccessListener { snapshot ->
             reviews = snapshot.children.mapNotNull { it.getValue<Review>() }
         }.addOnFailureListener { error ->
             println("Erreur lors de la récupération des avis : ${error.message}")
         }
     }
 
-    // Ajout de la scrollabilité
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
-            .verticalScroll(rememberScrollState()), // Rendre la colonne scrollable
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -70,7 +67,6 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Affichage des avis
         if (reviews.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.profile_champ1),
@@ -148,7 +144,7 @@ fun ProfileScreen(navController: NavHostController, UserId: String) {
                 Button(
                     onClick = {
                         if (newUsername.isNotBlank()) {
-                            database.child("users").child(UserId).child("username").setValue(newUsername)
+                            database.child("users").child(user.id).child("username").setValue(newUsername)
                                 .addOnSuccessListener {
                                     usernameState = newUsername
                                     showEditField = false

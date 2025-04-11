@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val user = intent.getSerializableExtra("User") as? User ?: User()
+        val user = intent.getParcelableExtra("User") as? User ?: User()
 
         setContent {
             GoofyZooTheme {

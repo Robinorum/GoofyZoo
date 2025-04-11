@@ -18,12 +18,12 @@ import fr.isen.goofyzoo.screens.profil.ProfileScreen
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier, user:User) {
     NavHost(navController = navController, startDestination = "home", modifier = modifier) {
         composable("home") { HomePage(navController) }
-        composable("profile_screen") { ProfileScreen(navController,user.id) }
+        composable("profile_screen") { ProfileScreen(user) }
         composable("map") { MapPage() }
 
         composable("enclosures_screen") { EnclosuresListScreen(navController) }
         composable("enclosure_detail") { backStackEntry ->
-            EnclosureDetailScreen(navController, user.id, user.username)
+            EnclosureDetailScreen(navController, user)
         }
 
         composable("services_screen") { ServicesListScreen(navController) }

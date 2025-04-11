@@ -23,6 +23,7 @@ import com.google.firebase.database.ktx.getValue
 import fr.isen.goofyzoo.R
 import fr.isen.goofyzoo.models.Enclosure
 import fr.isen.goofyzoo.models.Review
+import fr.isen.goofyzoo.models.User
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
@@ -30,7 +31,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
-fun EnclosureDetailScreen(navController: NavHostController, userId: String, username: String) {
+fun EnclosureDetailScreen(navController: NavHostController, user:User) {
     val enclosure = navController.previousBackStackEntry?.savedStateHandle?.get<Enclosure>("enclosure")
     var rating by remember { mutableStateOf(0) }
     var reviewText by remember { mutableStateOf("") }
@@ -38,9 +39,9 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
     val database = FirebaseDatabase.getInstance().reference
     var errorMessage by remember { mutableStateOf("") }
 
-    val hasUserReviewed by remember(reviews, userId) {
+    val hasUserReviewed by remember(reviews, user.id) {
         derivedStateOf {
-            reviews.any { it.userId == userId }
+            reviews.any { it.userId == user.id }
         }
     }
 
@@ -203,13 +204,13 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                 val newReview = Review(
                                     id = reviews.size + 1,
                                     enclosureId = it.id,
-                                    userId = userId,
-                                    username = username,
+                                    userId = user.id,
+                                    username = user.username,
                                     rating = rating,
                                     comment = reviewText
                                 )
 
-                                database.child("users").child(userId).child("reviews").push().setValue(newReview)
+                                database.child("users").child(user.id).child("reviews").push().setValue(newReview)
 
                                 database.child("zoo").get().addOnSuccessListener { snapshot ->
                                     for (biomeSnapshot in snapshot.children) {
@@ -252,7 +253,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                     )
                 }
             } else {
-                val userReview = reviews.firstOrNull { it.userId == userId }
+                val userReview = reviews.firstOrNull { it.userId == user.id }
                 if (userReview != null) {
                     Card(
                         modifier = Modifier
@@ -302,7 +303,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                                             println("Erreur lors de la suppression dans l'enclos: ${error.message}")
                                         }
 
-                                        database.child("users").child(userId).child("reviews").get().addOnSuccessListener { userSnapshot ->
+                                        database.child("users").child(user.id).child("reviews").get().addOnSuccessListener { userSnapshot ->
                                             userSnapshot.children.firstOrNull {
                                                 it.getValue<Review>()?.id == review.id
                                             }?.ref?.removeValue()?.addOnSuccessListener {
@@ -336,7 +337,7 @@ fun EnclosureDetailScreen(navController: NavHostController, userId: String, user
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            reviews.filter { it.userId != userId }.forEach { review ->
+            reviews.filter { it.userId != user.id }.forEach { review ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
